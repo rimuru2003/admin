@@ -70,29 +70,14 @@ const PrivateRoutes = () => {
         />
 
         <Route
-          path='/apps/seeker-management/*'
+          path='/apps/seeker-management/seeker/*'
           element={
             <SuspensedView>
               <SeekerPage />
             </SuspensedView>
           }
         />
-        {/* <Route
-          path='/apps/user/*'
-          element={
-            <SuspensedView>
-              <OrganizationPage />
-            </SuspensedView>
-          }
-        /> 
-         <Route
-          path='/apps/user/*'
-          element={
-            <SuspensedView>
-              <SoloPage />
-            </SuspensedView>
-          }
-        /> */}
+     
 
 
         <Route

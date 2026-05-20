@@ -16,8 +16,10 @@ import { seekerFilters } from "../../services/features/seeker/SeekerFilter";
 
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
+import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
+import { Route, Routes } from "react-router-dom";
 
-const SeekerPage = () => {
+const SeekerList = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { data, total, error } = useSelector(
@@ -79,11 +81,20 @@ const SeekerPage = () => {
         columns={seekerColumns}
         filtersConfig={seekerFilters}
         enableRowClick
-        getRowLink={(row: Seeker) =>
+        getRowLink={(row: any) =>
           `/apps/seeker-management/seeker/${row.id}`
         }
       />
     </Content>
+  );
+};
+
+const SeekerPage = () => {
+  return (
+    <Routes>
+      <Route index element={<SeekerList />} />
+      <Route path=":id" element={<GenericDetailPage />} />
+    </Routes>
   );
 };
 

@@ -1,16 +1,27 @@
 export type Solo = {
-  id: number;
+  id: string;
   name: string;
-  email: string;
-  status?: string;
-  last_login?: string;
-  current_login?: string;
-
-  location?: string;
+  slug?: string;
+  abn?: string;
+  acn?: string;
+  avg_org_rating?: string;
+  brand_primary_color?: string;
+  brand_secondary_color?: string;
+  contact_email?: string;
+  contact_phone?: string;
   created_at?: string;
-  updated_at?: string;
+  is_verified?: boolean;
+  licensed_staff_seats?: number;
+  logo_url?: string;
+  plan_id?: string | null;
+  ranking_priority?: number;
+  stripe_customer_id?: string | null;
+  type?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
 };
-
 export type GetSoloParams = {
   page?: number;
   per_page?: number;
