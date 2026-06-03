@@ -35,6 +35,8 @@ const Navbar = () => {
         <HeaderNotificationsMenu />
       </div>
 
+
+
       <div className={clsx('app-navbar-item', itemClass)}>
         <div className={clsx('position-relative', btnClass)} id='kt_drawer_chat_toggle'>
           <KTIcon iconName='message-text-2' className={btnIconClass} />

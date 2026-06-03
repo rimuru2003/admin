@@ -22,8 +22,6 @@ export const fetchSeekers = createAsyncThunk(
   async (params: GetSeekersParams) => {
     const res = await fetchSeekersApi(params);
 
-    console.log("API Response:", res);
-    console.log("Mapped Data:", res.data.map(mapSeeker));
     return {
       data: res.data.map(mapSeeker),
       total: res.total,

@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from "react"
 import { KTIcon, toAbsoluteUrl } from "../../../helpers"
 import { Dropdown4 } from "../../content/dropdown/Droupdown4"
 
-type AgencyStatus = "Active" | "Suspended" | "Pending Approval" | "Expired"
+type AgencyStatus = "Active" | "Suspended" | "Expired"
 
 interface AgencyOwner {
   id: number
@@ -24,7 +24,6 @@ type Props = {
 const statusMap: Record<AgencyStatus, string> = {
   Active: "badge-light-success",
   Suspended: "badge-light-danger",
-  "Pending Approval": "badge-light-warning",
   Expired: "badge-light-secondary",
 }
 
@@ -33,7 +32,7 @@ const agencies: AgencyOwner[] = [
     id: 1,
     agencyName: "Skyline Realty",
     ownerName: "Rajesh Patel",
-    city: "Ahmedabad",
+    city: "Sydney",
     totalProperties: 48,
     activeListings: 32,
     subscriptionPlan: "Pro",
@@ -45,11 +44,11 @@ const agencies: AgencyOwner[] = [
     id: 2,
     agencyName: "Urban Nest Properties",
     ownerName: "Amit Shah",
-    city: "Surat",
+    city: "Melbourne",
     totalProperties: 25,
     activeListings: 18,
     subscriptionPlan: "Basic",
-    status: "Pending Approval",
+    status: "Suspended",
     logo: "media/avatars/300-2.jpg",
     createdAt: "2026-02-20",
   },
@@ -57,7 +56,7 @@ const agencies: AgencyOwner[] = [
     id: 3,
     agencyName: "Prime Estate Group",
     ownerName: "Neha Mehta",
-    city: "Mumbai",
+    city: "Brisbane",
     totalProperties: 72,
     activeListings: 60,
     subscriptionPlan: "Enterprise",
@@ -69,7 +68,7 @@ const agencies: AgencyOwner[] = [
     id: 4,
     agencyName: "Golden Brick Realty",
     ownerName: "Suresh Iyer",
-    city: "Chennai",
+    city: "Sydney",
     totalProperties: 90,
     activeListings: 70,
     subscriptionPlan: "Enterprise",
@@ -80,7 +79,7 @@ const agencies: AgencyOwner[] = [
     id: 5,
     agencyName: "Blue Horizon Estates",
     ownerName: "Karan Verma",
-    city: "Delhi",
+    city: "Melbourne",
     totalProperties: 54,
     activeListings: 41,
     subscriptionPlan: "Pro",
@@ -92,11 +91,11 @@ const agencies: AgencyOwner[] = [
     id: 6,
     agencyName: "Green Valley Homes",
     ownerName: "Priya Nair",
-    city: "Bangalore",
+    city: "Brisbane",
     totalProperties: 37,
     activeListings: 24,
     subscriptionPlan: "Basic",
-    status: "Pending Approval",
+    status: "Suspended",
     logo: "media/avatars/300-5.jpg",
     createdAt: "2026-02-05",
   },
@@ -104,7 +103,7 @@ const agencies: AgencyOwner[] = [
     id: 7,
     agencyName: "Royal Brick Realty",
     ownerName: "Arjun Kapoor",
-    city: "Pune",
+    city: "Perth",
     totalProperties: 62,
     activeListings: 49,
     subscriptionPlan: "Enterprise",
@@ -116,7 +115,7 @@ const agencies: AgencyOwner[] = [
     id: 8,
     agencyName: "Elite Property Hub",
     ownerName: "Sneha Gupta",
-    city: "Kolkata",
+    city: "Perth",
     totalProperties: 29,
     activeListings: 17,
     subscriptionPlan: "Basic",
@@ -128,7 +127,7 @@ const agencies: AgencyOwner[] = [
     id: 9,
     agencyName: "Sunrise Realty Group",
     ownerName: "Vikram Singh",
-    city: "Jaipur",
+    city: "Sydney",
     totalProperties: 46,
     activeListings: 33,
     subscriptionPlan: "Pro",
@@ -140,7 +139,7 @@ const agencies: AgencyOwner[] = [
     id: 10,
     agencyName: "Urban Square Properties",
     ownerName: "Ritika Sharma",
-    city: "Hyderabad",
+    city: "Darwin",
     totalProperties: 71,
     activeListings: 52,
     subscriptionPlan: "Enterprise",
@@ -152,7 +151,7 @@ const agencies: AgencyOwner[] = [
     id: 11,
     agencyName: "Modern Living Realty",
     ownerName: "Deepak Choudhary",
-    city: "Lucknow",
+    city: "Melbourne",
     totalProperties: 34,
     activeListings: 21,
     subscriptionPlan: "Basic",
@@ -164,7 +163,7 @@ const agencies: AgencyOwner[] = [
     id: 12,
     agencyName: "NextNest Real Estate",
     ownerName: "Aisha Khan",
-    city: "Indore",
+    city: "Sydney",
     totalProperties: 40,
     activeListings: 28,
     subscriptionPlan: "Pro",
@@ -176,7 +175,7 @@ const agencies: AgencyOwner[] = [
     id: 13,
     agencyName: "Prestige Property Partners",
     ownerName: "Rohan Desai",
-    city: "Vadodara",
+    city: "Melbourne",
     totalProperties: 58,
     activeListings: 44,
     subscriptionPlan: "Enterprise",
@@ -188,11 +187,11 @@ const agencies: AgencyOwner[] = [
     id: 14,
     agencyName: "HomeScape Realty",
     ownerName: "Meera Joshi",
-    city: "Nagpur",
+    city: "Sydney",
     totalProperties: 23,
     activeListings: 14,
     subscriptionPlan: "Basic",
-    status: "Pending Approval",
+    status: "Suspended",
     logo: "media/avatars/300-14.jpg",
     createdAt: "2026-02-27",
   }
@@ -235,9 +234,9 @@ const TablesWidget5: FC<Props> = ({ className }) => {
       {/* HEADER */}
       <div className="card-header border-0 pt-5">
         <h3 className="card-title flex-column">
-          <span className="card-label fw-bold fs-3 mb-1">Agency Owners</span>
+          <span className="card-label fw-bold fs-3 mb-1">Client Plan's</span>
           <span className="text-muted mt-1 fw-semibold fs-7">
-            Filter by registration date
+            Filter by dates
           </span>
         </h3>
 
@@ -263,7 +262,7 @@ const TablesWidget5: FC<Props> = ({ className }) => {
               {paginatedAgencies.length === 0 ? (
                 <tr>
                   <td className="text-center text-muted py-10">
-                    No agencies found
+                    No data found
                   </td>
                 </tr>
               ) : (
