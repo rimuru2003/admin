@@ -38,6 +38,18 @@ export type StaffFormValues = {
   permissions: PlatformPermission[];
 };
 
+// `Staff` is a superset used by admin tables and lists. Keep fields optional
+// when they are not part of the core `StaffMember` shape.
+export type Staff = StaffMember & {
+  display_name?: string;
+  organization_id?: string | null;
+  mobile_number?: string | null;
+  roles?: string[];
+  email_verified_at?: string | null;
+  mobile_verified_at?: string | null;
+  updated_at?: string | null;
+};
+
 export type GetStaffParams = {
   page?: number;
   per_page?: number;

@@ -6,18 +6,18 @@ import {
 import { fetchStaffApi, createStaffApi, updateStaffApi } from "./staff.api";
 import { mapStaff } from "./staff.mapper";
 import type {
-  StaffMember,
+  Staff,
   StaffFormValues,
   GetStaffParams,
 } from "./staff.types";
 
 type StaffState = {
-  data: StaffMember[];
+  data: Staff[];
   total: number;
   loading: boolean;
   error: string | null;
   isModalOpen: boolean;
-  editingStaff: StaffMember | null;
+  editingStaff: Staff | null;
   saving: boolean;
 };
 
@@ -57,7 +57,7 @@ const staffSlice = createSlice({
   name: "staff",
   initialState,
   reducers: {
-    openStaffModal(state, action: PayloadAction<StaffMember | null>) {
+    openStaffModal(state, action: PayloadAction<Staff | null>) {
       state.isModalOpen = true;
       state.editingStaff = action.payload;
     },
