@@ -1,26 +1,28 @@
-import { lazy, FC, Suspense } from 'react'
-import { Route, Routes, Navigate } from 'react-router-dom'
-import { MasterLayout } from '../../_metronic/layout/MasterLayout'
-import TopBarProgress from 'react-topbar-progress-indicator'
-import { DashboardWrapper } from '../pages/dashboard/DashboardWrapper'
-import { MenuTestPage } from '../pages/MenuTestPage'
-import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'
-import { WithChildren } from '../../_metronic/helpers'
-import Subscription from '../pages/Subscription/Subscription'
-import ServiceGroup from '../pages/user management/ServiceGroup'
-
+import { lazy, FC, Suspense } from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { MasterLayout } from "../../_metronic/layout/MasterLayout";
+import TopBarProgress from "react-topbar-progress-indicator";
+import { DashboardWrapper } from "../pages/dashboard/DashboardWrapper";
+import { MenuTestPage } from "../pages/MenuTestPage";
+import { getCSSVariableValue } from "../../_metronic/assets/ts/_utils";
+import { WithChildren } from "../../_metronic/helpers";
+// import Subscription from "../pages/Subscription/Subscription";
 
 const PrivateRoutes = () => {
-  const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
-  const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
-  const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
-  const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
-  const StaffPage = lazy(() => import('../pages/user management/StaffPage'))
-  const SeekerPage = lazy(() => import('../pages/user management/SeekerPgae'))
+  const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
+  const WizardsPage = lazy(() => import("../modules/wizards/WizardsPage"));
+  const AccountPage = lazy(() => import("../modules/accounts/AccountPage"));
+  const WidgetsPage = lazy(() => import("../modules/widgets/WidgetsPage"));
+  const StaffPage = lazy(() => import("../pages/user management/StaffPage"));
+  const SeekerPage = lazy(() => import("../pages/user management/SeekerPgae"));
   // const AgencyPage = lazy(() => import('../pages/user management/ServicePage'))
   // const ServicePage = lazy(() => import('../pages/user management/ServicePage'))
   // const SoloPage = lazy(() => import('../pages/user management/user/SoloPage'))
-  const UserPage = lazy(() => import('../pages/user management/UserPage'))
+  const UserPage = lazy(() => import("../pages/user management/UserPage"));
+  const Subscription = lazy(() => import("../pages/Subscription/Subscription"));
+  const EmailTemplatePage = lazy(() => import("../pages/email/EmailTemplatePage"))
+  const PropertyListPage = lazy(() => import("../pages/user management/PropertyList"))
+  const ServiceList = lazy(() => import("../pages/user management/ServiceList"))
 
 
 
@@ -30,14 +32,14 @@ const PrivateRoutes = () => {
     <Routes>
       <Route element={<MasterLayout />}>
         {/* Redirect to Dashboard after success login/registartion */}
-        <Route path='auth/*' element={<Navigate to='/dashboard' />} />
+        <Route path="auth/*" element={<Navigate to="/dashboard" />} />
         {/* Pages */}
-        <Route path='dashboard' element={<DashboardWrapper />} />
+        <Route path="dashboard" element={<DashboardWrapper />} />
         {/* <Route path='builder' element={<BuilderPageWrapper />} /> */}
-        <Route path='menu-test' element={<MenuTestPage />} />
+        <Route path="menu-test" element={<MenuTestPage />} />
         {/* Lazy Modules */}
         <Route
-          path='crafted/pages/profile/*'
+          path="crafted/pages/profile/*"
           element={
             <SuspensedView>
               <ProfilePage />
@@ -45,7 +47,7 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='crafted/pages/wizards/*'
+          path="crafted/pages/wizards/*"
           element={
             <SuspensedView>
               <WizardsPage />
@@ -53,7 +55,7 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='crafted/widgets/*'
+          path="crafted/widgets/*"
           element={
             <SuspensedView>
               <WidgetsPage />
@@ -61,44 +63,37 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='crafted/account/*'
+          path="crafted/account/*"
           element={
             <SuspensedView>
               <AccountPage />
             </SuspensedView>
           }
         />
-
         <Route
-          path='/apps/seeker-management/seeker/*'
+          path="/apps/seeker-management/seeker/*"
           element={
             <SuspensedView>
               <SeekerPage />
             </SuspensedView>
           }
         />
-     
-
-
         <Route
-          path='/apps/user/*'
+          path="/apps/user/*"
           element={
             <SuspensedView>
               <UserPage />
             </SuspensedView>
           }
         />
-
         <Route
-          path='/apps/staff-management/staff/*'
+          path="/apps/staff-management/staff/*"
           element={
             <SuspensedView>
               <StaffPage />
             </SuspensedView>
           }
         />
-      
-
         {/* <Route
           path='/apps/business-management/*'
           element={
@@ -108,7 +103,7 @@ const PrivateRoutes = () => {
           }
         /> */}
         <Route
-          path='/apps/subscription-plans'
+          path="/apps/subscription-plans/*"
           element={
             <SuspensedView>
               <Subscription />
@@ -116,38 +111,73 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='/apps/property-management/*'
+          path="/apps/orders/*"
           element={
             <SuspensedView>
-              {/* <Subscription /> */}
+              <Subscription />
+            </SuspensedView>
+          }
+        />{" "}
+        <Route
+          path="/apps/refreal/*"
+          element={
+            <SuspensedView>
+              <Subscription />
+            </SuspensedView>
+          }
+        />{" "}
+        <Route
+          path="/apps/coupons/*"
+          element={
+            <SuspensedView>
+              <Subscription />
+            </SuspensedView>
+          }
+        />{" "}
+        <Route
+          path="/apps/plan-request/*"
+          element={
+            <SuspensedView>
+              <Subscription />
+            </SuspensedView>
+          }
+        />{" "}
+        <Route
+          path="/apps/email-template/*"
+          element={
+            <SuspensedView>
+              <EmailTemplatePage />
             </SuspensedView>
           }
         />
         <Route
-          path='/apps/service-management/*'
+          path="/apps/property-management/*"
+          element={<SuspensedView> < PropertyListPage /></SuspensedView>}
+        />
+        <Route
+          path="/apps/service-management/*"
           element={
             <SuspensedView>
-              <ServiceGroup />
+              <ServiceList />
             </SuspensedView>
           }
         />
-
-        <Route path='*' element={<Navigate to='/error/404' />} />
+        <Route path="*" element={<Navigate to="/error/404" />} />
       </Route>
     </Routes>
-  )
-}
+  );
+};
 
 const SuspensedView: FC<WithChildren> = ({ children }) => {
-  const baseColor = getCSSVariableValue('--bs-primary')
+  const baseColor = getCSSVariableValue("--bs-primary");
   TopBarProgress.config({
     barColors: {
-      '0': baseColor,
+      "0": baseColor,
     },
     barThickness: 1,
     shadowBlur: 5,
-  })
-  return <Suspense fallback={<TopBarProgress />}>{children}</Suspense>
-}
+  });
+  return <Suspense fallback={<TopBarProgress />}>{children}</Suspense>;
+};
 
-export { PrivateRoutes }
+export { PrivateRoutes };

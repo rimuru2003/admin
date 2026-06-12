@@ -37,7 +37,7 @@ const SeekerList = () => {
         columns={seekerConfig.columns}
         filtersConfig={seekerConfig.filters}
         enableRowClick
-        getRowLink={(row) => `/seekers/${row.id}`}
+        getRowLink={(row) => `/apps/seeker-management/seeker/${row.id}`}
       />
     </Content>
   );

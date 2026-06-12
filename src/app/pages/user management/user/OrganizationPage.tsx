@@ -33,7 +33,7 @@ const OrganizationPage = () => {
                 columns={organizationConfig.columns}
                 filtersConfig={organizationConfig.filters}
                 enableRowClick
-                getRowLink={(row) => `/organizations/${row.id}`}
+                getRowLink={(row) => `/apps/user/organization/${row.id}`}
             />
         </Content>
     );

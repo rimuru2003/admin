@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import clsx from "clsx"
-import { ModalShell } from "../../../../modules/apps/shared_table/utils/ModalShell"
+import { ModalShell } from "../../../../modules/apps/component/ModalShell"
 import {
   PLATFORM_PERMISSIONS,
   PERMISSION_LABELS,

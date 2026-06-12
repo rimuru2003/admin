@@ -1,6 +1,6 @@
-import type { ServiceGroup } from "./service_group.types";
+import type { PropertyList } from "./property.types";
 
-type ServiceGroupApi = {
+type PropertyListApi = {
   id: string;
   name: string;
   slug?: string;
@@ -16,7 +16,7 @@ type ServiceGroupApi = {
   updated_at?: string;
 };
 
-export const mapServiceGroup = (item: ServiceGroupApi): ServiceGroup => ({
+export const mapPropertyGroup = (item: PropertyListApi): PropertyList => ({
   id: item.id,
   name: item.name ?? null,
   slug: item.slug ?? null,

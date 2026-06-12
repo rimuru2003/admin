@@ -10,39 +10,30 @@ type DetailState = {
 
 const GenericDetailPage = () => {
     const location = useLocation()
+    const { id } = useParams()
     const state = location.state as DetailState | null
 
-    const { entity } = useParams()
+    // derive title from URL: /seekers/123 → "Seekers"
+    const pathParts = location.pathname.split('/').filter(Boolean)
+    const entitySegment = pathParts[pathParts.length - 2] ?? 'detail'
+    const title = entitySegment
+        .charAt(0).toUpperCase() + entitySegment.slice(1).replace(/-/g, ' ')
 
-    const title = entity
-        ? entity.charAt(0).toUpperCase() + entity.slice(1).replace(/-/g, ' ')
-        : 'Detail'
-
-    // No guessing anymore
     const data = state?.data ?? null
 
     const fields = state?.columns
-        ? state.columns.map((col) => ({
-            key: col.key,
-            label: col.label,
-        }))
+        ? state.columns.map((col) => ({ key: col.key, label: col.label }))
         : data
             ? Object.keys(data).map((key) => ({
                 key,
-                label: key
-                    .replace(/_/g, ' ')
-                    .replace(/\b\w/g, (c) => c.toUpperCase()),
+                label: key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
             }))
             : []
 
     return (
         <Content>
             <PageHeader title={title} subtitle={`Viewing ${title} details`} />
-            <EntityDetail
-                title={title}
-                data={data}
-                fields={fields}
-            />
+            <EntityDetail title={title} data={data} fields={fields} />
         </Content>
     )
 }

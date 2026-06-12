@@ -207,12 +207,12 @@ const SidebarMenuMain = () => {
           fontIcon="bi-layers"
         />
 
-        <SidebarMenuItem
+        {/* <SidebarMenuItem
           to="/apps/property-management/features"
           icon="abstract-28"
           title="Property Features "
           fontIcon="bi-layers"
-        />
+        /> */}
       </SidebarMenuItemWithSub>
       <SidebarMenuItemWithSub
         to="/crafted/widgets"
@@ -220,23 +220,23 @@ const SidebarMenuMain = () => {
         fontIcon="bi-archive"
         icon="element-plus"
       >
-        <SidebarMenuItem
+        {/* <SidebarMenuItem
           to="/apps/service-management/group"
           icon="abstract-28"
           title="Service Group"
           fontIcon="bi-layers"
-        />
+        /> */}
 
         <SidebarMenuItem
           to="/apps/service-management/listing"
           icon="abstract-28"
-          title="Service Features "
+          title="Service listing "
           fontIcon="bi-layers"
         />
       </SidebarMenuItemWithSub>
 
       <SidebarMenuItem
-        to="/apps/order"
+        to="/apps/orders"
         title="Orders"
         fontIcon="bi-archive"
         icon="element-plus"
@@ -248,7 +248,7 @@ const SidebarMenuMain = () => {
         icon="element-plus"
       />
       <SidebarMenuItem
-        to="/apps/coupon"
+        to="/apps/coupons"
         title="Coupons"
         fontIcon="bi-archive"
         icon="element-plus"

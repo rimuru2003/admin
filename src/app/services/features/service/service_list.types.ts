@@ -1,4 +1,4 @@
-export type ServiceGroup = {
+export type ServiceList = {
   id: string;
 
   name: string;
@@ -18,7 +18,7 @@ export type ServiceGroup = {
   updated_at?: string | null;
 };
 
-export type GetServiceGroupParams = {
+export type GetServiceListParams = {
   page?: number;
   per_page?: number;
   search?: string;

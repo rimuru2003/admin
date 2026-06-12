@@ -1,0 +1,104 @@
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
+import {
+  fetchPlansApi,
+  createPlanApi,
+  updatePlanApi,
+  deletePlanApi,
+} from "./plan.api";
+import type { Plan, PlanFormValues } from "./plan.types";
+
+type PlanState = {
+  data: Plan[];
+  loading: boolean;
+  error: string | null;
+  isModalOpen: boolean;
+  editingPlan: Plan | null;
+  saving: boolean;
+};
+
+const initialState: PlanState = {
+  data: [],
+  loading: false,
+  error: null,
+  isModalOpen: false,
+  editingPlan: null,
+  saving: false,
+};
+
+export const fetchPlans = createAsyncThunk("plans/fetch", async () => {
+  return await fetchPlansApi();
+});
+
+export const savePlan = createAsyncThunk(
+  "plans/save",
+  async (payload: { id?: string; values: PlanFormValues }) => {
+    if (payload.id) {
+      return await updatePlanApi(payload.id, payload.values);
+    }
+    return await createPlanApi(payload.values);
+  },
+);
+
+export const removePlan = createAsyncThunk(
+  "plans/delete",
+  async (id: string) => {
+    await deletePlanApi(id);
+    return id;
+  },
+);
+
+const planSlice = createSlice({
+  name: "plans",
+  initialState,
+  reducers: {
+    openPlanModal(state, action: PayloadAction<Plan | null>) {
+      state.isModalOpen = true;
+      state.editingPlan = action.payload;
+    },
+    closePlanModal(state) {
+      state.isModalOpen = false;
+      state.editingPlan = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchPlans.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPlans.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(fetchPlans.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message ?? "Failed to load plans";
+      })
+
+      .addCase(savePlan.pending, (state) => {
+        state.saving = true;
+      })
+      .addCase(savePlan.fulfilled, (state, action) => {
+        state.saving = false;
+        state.isModalOpen = false;
+        state.editingPlan = null;
+        const idx = state.data.findIndex((p) => p.id === action.payload.id);
+        if (idx !== -1) state.data[idx] = action.payload;
+        else state.data.push(action.payload);
+      })
+      .addCase(savePlan.rejected, (state) => {
+        state.saving = false;
+      })
+
+      .addCase(removePlan.fulfilled, (state, action) => {
+        state.data = state.data.filter((p) => p.id !== action.payload);
+      });
+  },
+});
+
+export const { openPlanModal, closePlanModal } = planSlice.actions;
+export default planSlice.reducer;

@@ -1,6 +1,6 @@
 // shared/components/modal/ModalShell.tsx
 
-import { KTIcon } from '../../../../../_metronic/helpers'
+import { KTIcon } from '../../../../_metronic/helpers'
 
 type Props = {
   title: string

@@ -57,6 +57,8 @@ const StaffList = () => {
           onParamsChange={handleParamsChange}
           columns={staffConfig.columns}
           filtersConfig={staffConfig.filters}
+          enableRowClick
+          getRowLink={(row) => `/apps/staff-management/staff/${row.id}`}
           storageKey="staffColumns"
           addAction={{
             label: "Add Staff",
@@ -65,6 +67,10 @@ const StaffList = () => {
           rowActions={[
             {
               label: "Edit",
+              onClick: (row) => dispatch(openStaffModal(row)),
+            },
+            {
+              label: "Delete",
               onClick: (row) => dispatch(openStaffModal(row)),
             },
           ]}

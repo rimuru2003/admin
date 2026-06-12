@@ -1,25 +1,30 @@
-import { useEffect } from "react"
-import { KTIcon } from '../../../../../../../_metronic/helpers'
-import { MenuComponent } from "../../../../../../../_metronic/assets/ts/components"
+import { useEffect } from "react";
+import { KTIcon } from "../../../../../../../_metronic/helpers";
+import { MenuComponent } from "../../../../../../../_metronic/assets/ts/components";
 
-type Col = { accessor: string; Header: string; alwaysVisible?: boolean }
+type Col = { accessor: string; Header: string; alwaysVisible?: boolean };
 
 type Props = {
-  columns: Col[]
-  visibleColumns: string[]
-  setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
-}
+  columns: Col[];
+  visibleColumns: string[];
+  setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>;
+};
 
-const ColumnSelector = ({ columns, visibleColumns, setVisibleColumns }: Props) => {
+const ColumnSelector = ({
+  columns,
+  visibleColumns,
+  setVisibleColumns,
+}: Props) => {
   useEffect(() => {
-    setTimeout(() => MenuComponent.reinitialization(), 0)
-  }, [columns, visibleColumns])
+    setTimeout(() => MenuComponent.reinitialization(), 0);
+  }, [columns, visibleColumns]);
 
   const toggle = (accessor: string) =>
     setVisibleColumns((prev) => {
-      if (prev.includes(accessor)) return prev.length === 1 ? prev : prev.filter((c) => c !== accessor)
-      return [...prev, accessor]
-    })
+      if (prev.includes(accessor))
+        return prev.length === 1 ? prev : prev.filter((c) => c !== accessor);
+      return [...prev, accessor];
+    });
 
   return (
     <div className="position-relative">
@@ -33,8 +38,13 @@ const ColumnSelector = ({ columns, visibleColumns, setVisibleColumns }: Props) =
         Columns
       </button>
 
-      <div className="menu menu-sub menu-sub-dropdown w-275px" data-kt-menu="true">
-        <div className="px-5 py-4 fw-bold text-gray-800 fs-6">Select Columns</div>
+      <div
+        className="menu menu-sub menu-sub-dropdown w-275px"
+        data-kt-menu="true"
+      >
+        <div className="px-5 py-4 fw-bold text-gray-800 fs-6">
+          Select Columns
+        </div>
         <div className="separator mx-3" />
         <div className="px-5 py-4 mh-250px overflow-auto">
           {columns.map((col) => (
@@ -46,19 +56,25 @@ const ColumnSelector = ({ columns, visibleColumns, setVisibleColumns }: Props) =
                 <input
                   type="checkbox"
                   className="form-check-input"
-                  checked={col.alwaysVisible || visibleColumns.includes(col.accessor)}
+                  checked={
+                    col.alwaysVisible || visibleColumns.includes(col.accessor)
+                  }
                   disabled={col.alwaysVisible}
                   onChange={() => toggle(col.accessor)}
                 />
-                <span className="form-check-label text-gray-800 fw-semibold">{col.Header}</span>
+                <span className="form-check-label text-gray-800 fw-semibold">
+                  {col.Header}
+                </span>
               </div>
-              {col.alwaysVisible && <span className="badge badge-light-danger">Required</span>}
+              {col.alwaysVisible && (
+                <span className="badge badge-light-danger">Required</span>
+              )}
             </label>
           ))}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export { ColumnSelector }
+export { ColumnSelector };
