@@ -46,7 +46,7 @@ const PrivateRoutes = () => {
             </SuspensedView>
           }
         />
-        <Route
+        {/* <Route
           path="crafted/pages/wizards/*"
           element={
             <SuspensedView>
@@ -69,7 +69,7 @@ const PrivateRoutes = () => {
               <AccountPage />
             </SuspensedView>
           }
-        />
+        /> */}
         <Route
           path="/apps/seeker-management/seeker/*"
           element={
@@ -114,7 +114,7 @@ const PrivateRoutes = () => {
           path="/apps/orders/*"
           element={
             <SuspensedView>
-              <Subscription />
+              {/* <Subscription /> */}
             </SuspensedView>
           }
         />{" "}
@@ -122,7 +122,7 @@ const PrivateRoutes = () => {
           path="/apps/refreal/*"
           element={
             <SuspensedView>
-              <Subscription />
+              {/* <Subscription /> */}
             </SuspensedView>
           }
         />{" "}
@@ -130,7 +130,7 @@ const PrivateRoutes = () => {
           path="/apps/coupons/*"
           element={
             <SuspensedView>
-              <Subscription />
+              {/* <Subscription /> */}
             </SuspensedView>
           }
         />{" "}
@@ -138,7 +138,7 @@ const PrivateRoutes = () => {
           path="/apps/plan-request/*"
           element={
             <SuspensedView>
-              <Subscription />
+              {/* <Subscription /> */}
             </SuspensedView>
           }
         />{" "}
