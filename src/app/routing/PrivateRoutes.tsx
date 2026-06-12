@@ -1,67 +1,276 @@
-import { lazy, FC, Suspense } from 'react'
-import { Route, Routes, Navigate } from 'react-router-dom'
-import { MasterLayout } from '../../_metronic/layout/MasterLayout'
+import { FC, Suspense, lazy } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import TopBarProgress from 'react-topbar-progress-indicator'
-import { DashboardWrapper } from '../pages/dashboard/DashboardWrapper'
-import { MenuTestPage } from '../pages/MenuTestPage'
 import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'
 import { WithChildren } from '../../_metronic/helpers'
-import Subscription from '../pages/Subscription/Subscription'
-import ServiceGroup from '../pages/user management/ServiceGroup'
-
+import { MasterLayout } from '../../_metronic/layout/MasterLayout'
+import { PermissionGuard, RoleGuard, useAuth } from '../modules/auth'
+import { getRoleHomeRoute } from '../modules/auth/core/roleRoutes'
+import { DashboardWrapper } from '../pages/dashboard/DashboardWrapper'
+import { MenuTestPage } from '../pages/MenuTestPage'
+import { ComingSoonPage } from '../pages/ComingSoonPage'
+import PlanRequestPage from '../pages/platform/PlanRequestPage'
+import CouponPage from '../pages/platform/CouponPage'
+import OrderPage from '../pages/platform/OrderPage'
+import SettingsPage from '../pages/platform/SettingsPage'
+import PermissionsPage from '../pages/platform/PermissionsPage'
 
 const PrivateRoutes = () => {
+  const { currentUser } = useAuth()
+  const homeRoute = getRoleHomeRoute(currentUser?.roles ?? [])
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
   const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
   const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
   const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
   const StaffPage = lazy(() => import('../pages/user management/StaffPage'))
   const SeekerPage = lazy(() => import('../pages/user management/SeekerPgae'))
-  // const AgencyPage = lazy(() => import('../pages/user management/ServicePage'))
-  // const ServicePage = lazy(() => import('../pages/user management/ServicePage'))
-  // const SoloPage = lazy(() => import('../pages/user management/user/SoloPage'))
   const UserPage = lazy(() => import('../pages/user management/UserPage'))
-
-
-
-
+  const Subscription = lazy(() => import('../pages/Subscription/Subscription'))
+  const EmailTemplatePage = lazy(() => import('../pages/email/EmailTemplatePage'))
+  const PropertyListPage = lazy(() => import('../pages/user management/PropertyList'))
 
   return (
     <Routes>
       <Route element={<MasterLayout />}>
-        {/* Redirect to Dashboard after success login/registartion */}
-        <Route path='auth/*' element={<Navigate to='/dashboard' />} />
-        {/* Pages */}
-        <Route path='dashboard' element={<DashboardWrapper />} />
-        {/* <Route path='builder' element={<BuilderPageWrapper />} /> */}
-        <Route path='menu-test' element={<MenuTestPage />} />
-        {/* Lazy Modules */}
+        <Route path="auth/*" element={<Navigate to={homeRoute} replace />} />
+        <Route path="/dashboard" element={<Navigate to={homeRoute} replace />} />
+        <Route path="/super-admin" element={<Navigate to="/super-admin/dashboard" replace />} />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+
         <Route
-          path='crafted/pages/profile/*'
+          path="/super-admin/dashboard"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <DashboardWrapper />
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/dashboard"
+          element={
+            <RoleGuard allow={['admin', 'admin_staff']}>
+              <DashboardWrapper />
+            </RoleGuard>
+          }
+        />
+        <Route path="menu-test" element={<MenuTestPage />} />
+
+        <Route
+          path="crafted/pages/profile/*"
           element={
             <SuspensedView>
               <ProfilePage />
             </SuspensedView>
           }
         />
+
         <Route
-          path='crafted/pages/wizards/*'
+          path="/super-admin/seekers/*"
           element={
-            <SuspensedView>
-              <WizardsPage />
-            </SuspensedView>
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <SeekerPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/companies/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <UserPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/users/*"
+          element={
+            <RoleGuard allow={['admin', 'admin_staff']}>
+              <SuspensedView>
+                <StaffPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/orders/*"
+          element={
+            <RoleGuard allow={['admin', 'admin_staff']}>
+              <SuspensedView>
+                <OrderPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/plan-requests/*"
+          element={
+            <RoleGuard allow={['admin', 'admin_staff']}>
+              <SuspensedView>
+                <PlanRequestPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/coupons/*"
+          element={
+            <RoleGuard allow={['admin', 'admin_staff']}>
+              <SuspensedView>
+                <CouponPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/staff/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <StaffPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/plans/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <Subscription />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/orders/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <OrderPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/referral-programs/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <ComingSoonPage
+                  title="Referral Programs"
+                  description="Referral program management is being finalized. This page will let super admins manage rewards, commissions, and tracking."
+                />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/coupons/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <CouponPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/plan-requests/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <PlanRequestPage />
+              </SuspensedView>
+            </RoleGuard>
           }
         />
         <Route
-          path='crafted/widgets/*'
+          path="/super-admin/email-templates/*"
           element={
-            <SuspensedView>
-              <WidgetsPage />
-            </SuspensedView>
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <EmailTemplatePage />
+              </SuspensedView>
+            </RoleGuard>
           }
         />
+
         <Route
-          path='crafted/account/*'
+          path="/super-admin/permissions/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <PermissionGuard anyOf={['permission.view', 'permission.manage']}>
+                <SuspensedView>
+                  <PermissionsPage />
+                </SuspensedView>
+              </PermissionGuard>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/property-management/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <PropertyListPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/property-management/*"
+          element={
+            <RoleGuard allow={['admin', 'admin_staff']}>
+              <SuspensedView>
+                <PropertyListPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/settings"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <SettingsPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/settings"
+          element={
+            <RoleGuard allow={['admin', 'admin_staff']}>
+              <SuspensedView>
+                <SettingsPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route path="/apps/*" element={<Navigate to={homeRoute} replace />} />
+
+        <Route
+          path="crafted/account/*"
           element={
             <SuspensedView>
               <AccountPage />
@@ -69,91 +278,13 @@ const PrivateRoutes = () => {
           }
         />
 
-        <Route
-          path='/apps/seeker-management/*'
-          element={
-            <SuspensedView>
-              <SeekerPage />
-            </SuspensedView>
-          }
-        />
-        {/* <Route
-          path='/apps/user/*'
-          element={
-            <SuspensedView>
-              <OrganizationPage />
-            </SuspensedView>
-          }
-        /> 
-         <Route
-          path='/apps/user/*'
-          element={
-            <SuspensedView>
-              <SoloPage />
-            </SuspensedView>
-          }
-        /> */}
-
-
-        <Route
-          path='/apps/user/*'
-          element={
-            <SuspensedView>
-              <UserPage />
-            </SuspensedView>
-          }
-        />
-
-        <Route
-          path='/apps/staff-management/staff/*'
-          element={
-            <SuspensedView>
-              <StaffPage />
-            </SuspensedView>
-          }
-        />
-      
-
-        {/* <Route
-          path='/apps/business-management/*'
-          element={
-            <SuspensedView>
-              <AgencyPage />
-            </SuspensedView>
-          }
-        /> */}
-        <Route
-          path='/apps/subscription-plans'
-          element={
-            <SuspensedView>
-              <Subscription />
-            </SuspensedView>
-          }
-        />
-        <Route
-          path='/apps/property-management/*'
-          element={
-            <SuspensedView>
-              {/* <Subscription /> */}
-            </SuspensedView>
-          }
-        />
-        <Route
-          path='/apps/service-management/*'
-          element={
-            <SuspensedView>
-              <ServiceGroup />
-            </SuspensedView>
-          }
-        />
-
-        <Route path='*' element={<Navigate to='/error/404' />} />
+        <Route path="*" element={<Navigate to="/error/404" />} />
       </Route>
     </Routes>
   )
 }
 
-const SuspensedView: FC<WithChildren> = ({ children }) => {
+const SuspensedView: FC<WithChildren> = ({children}) => {
   const baseColor = getCSSVariableValue('--bs-primary')
   TopBarProgress.config({
     barColors: {
@@ -162,7 +293,8 @@ const SuspensedView: FC<WithChildren> = ({ children }) => {
     barThickness: 1,
     shadowBlur: 5,
   })
+
   return <Suspense fallback={<TopBarProgress />}>{children}</Suspense>
 }
 
-export { PrivateRoutes }
+export {PrivateRoutes}

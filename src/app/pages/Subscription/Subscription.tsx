@@ -1,86 +1,64 @@
-import React from 'react'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Content } from '../../../_metronic/layout/components/content'
+import { PageHeader } from '../../modules/apps/shared_table/entity-list/components/header/PageHeader'
 import SubscriptionList from '../../modules/SubscriptionList/SubscriptionList'
+import { PlanModal } from '../../modules/SubscriptionList/PlanModal'
+import { DeleteConfirmModal } from '../../modules/apps/component/DeleteConfirmModal'
+import {
+    fetchPlans, savePlan, removePlan,
+    openPlanModal, closePlanModal,
+} from '../../services/features/subscriptions/plan.slice'
+import { ALL_FEATURES, type Plan } from '../../services/features/subscriptions/plan.types'
+import type { RootState, AppDispatch } from '../../services/store'
 
-const subscriptionData = {
-    currentPlan: {
-        id: 'silver',
-        name: 'Silver',
-        price: 1999,
-        propertyLimit: 25,
-        usedProperties: 25,
-    },
-
-    features: [
-        'Property Listings',
-        'Featured Listings',
-        'Agent Profiles',
-        'Advanced Analytics',
-        'Priority Support',
-        'CRM Integration',
-        'Lead Management',
-        'Custom Branding',
-    ],
-
-    plans: [
-        {
-            id: 'bronze',
-            name: 'Bronze',
-            price: 999,
-            propertyLimit: 10,
-            popular: false,
-            features: {
-                'Property Listings': true,
-                'Featured Listings': false,
-                'Agent Profiles': true,
-                'Advanced Analytics': false,
-                'Priority Support': false,
-                'CRM Integration': false,
-                'Lead Management': false,
-                'Custom Branding': false,
-            },
-        },
-        {
-            id: 'silver',
-            name: 'Silver',
-            price: 1999,
-            propertyLimit: 25,
-            popular: true,
-            features: {
-                'Property Listings': true,
-                'Featured Listings': true,
-                'Agent Profiles': true,
-                'Advanced Analytics': true,
-                'Priority Support': false,
-                'CRM Integration': false,
-                'Lead Management': true,
-                'Custom Branding': false,
-            },
-        },
-        {
-            id: 'gold',
-            name: 'Gold',
-            price: 3999,
-            propertyLimit: 100,
-            popular: false,
-            features: {
-                'Property Listings': true,
-                'Featured Listings': true,
-                'Agent Profiles': true,
-                'Advanced Analytics': true,
-                'Priority Support': true,
-                'CRM Integration': true,
-                'Lead Management': true,
-                'Custom Branding': true,
-            },
-        },
-    ],
-}
+const CURRENT_PLAN = { id: 'silver', name: 'Silver', propertyLimit: 25, usedProperties: 25 }
 
 const Subscription = () => {
+    const dispatch = useDispatch<AppDispatch>()
+    const { data: plans, loading, isModalOpen, editingPlan, saving } =
+        useSelector((s: RootState) => s.plans)
+
+    const [deletingPlan, setDeletingPlan] = useState<Plan | null>(null)
+
+    useEffect(() => {
+        dispatch(fetchPlans())
+    }, [])
+
+    if (loading) return <Content><div className="p-10">Loading...</div></Content>
+
     return (
         <Content>
-            <SubscriptionList data={subscriptionData} />
+            <PageHeader title="Subscription Plans" subtitle="Manage platform plans" />
+
+            <SubscriptionList
+                plans={plans}
+                currentPlan={CURRENT_PLAN}
+                onAdd={() => dispatch(openPlanModal(null))}
+                onEdit={(plan) => dispatch(openPlanModal(plan))}
+                onDelete={(plan) => setDeletingPlan(plan)}
+            />
+
+            {isModalOpen && (
+                <PlanModal
+                    initialValues={editingPlan}
+                    isSubmitting={saving}
+                    onClose={() => dispatch(closePlanModal())}
+                    onSubmit={(values) => dispatch(savePlan({ id: editingPlan?.id, values }))}
+                />
+            )}
+
+            {deletingPlan && (
+                <DeleteConfirmModal
+                    title="Delete Plan"
+                    message={`Are you sure you want to delete the "${deletingPlan.name}" plan?`}
+                    onClose={() => setDeletingPlan(null)}
+                    onConfirm={() => {
+                        dispatch(removePlan(deletingPlan.id))
+                        setDeletingPlan(null)
+                    }}
+                />
+            )}
         </Content>
     )
 }

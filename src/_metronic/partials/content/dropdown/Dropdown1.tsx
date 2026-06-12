@@ -35,12 +35,12 @@ export function Dropdown1() {
           <div className='d-flex'>
             <label className='form-check form-check-sm form-check-custom form-check-solid me-5'>
               <input className='form-check-input' type='checkbox' value='1' />
-              <span className='form-check-label'>Author</span>
+              <span className='form-check-label'>Organization</span>
             </label>
 
             <label className='form-check form-check-sm form-check-custom form-check-solid'>
               <input className='form-check-input' type='checkbox' value='2' defaultChecked={true} />
-              <span className='form-check-label'>Customer</span>
+              <span className='form-check-label'>Solo Trader</span>
             </label>
           </div>
         </div>

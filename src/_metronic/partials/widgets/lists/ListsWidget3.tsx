@@ -87,7 +87,7 @@ const ListsWidget3: React.FC<Props> = ({ className }) => {
       {/* Header */}
       <div className='card-header border-0'>
         <h3 className='card-title fw-bold text-gray-900'>
-          Pending Agency Approvals
+          Pending  Approvals
         </h3>
 
         <div className='card-toolbar'>

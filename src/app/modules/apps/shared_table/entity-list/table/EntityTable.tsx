@@ -1,17 +1,23 @@
 import { useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
 import { KTCardBody } from "../../../../../../_metronic/helpers";
-import { Column as CustomColumn } from "../EntityList";
+import type { Column as CustomColumn } from "../EntityList";
+
+export type RowAction<T> = {
+  label: string;
+  className?: string;
+  onClick: (row: T) => void;
+};
 
 type Props<T extends { id: string | number }> = {
   data: T[];
   columns: CustomColumn<T>[];
   enableRowClick?: boolean;
   getRowLink?: (row: T) => string;
-  onEdit?: (row: T) => void;
   selectedRows?: Set<T["id"]>;
   onRowSelect?: (id: T["id"]) => void;
   onSelectAll?: (checked: boolean) => void;
+  rowActions?: RowAction<T>[];
 };
 
 const EntityTable = <T extends { id: string | number }>({
@@ -19,33 +25,25 @@ const EntityTable = <T extends { id: string | number }>({
   columns,
   enableRowClick = false,
   getRowLink,
-  onEdit,
   selectedRows = new Set(),
   onRowSelect,
   onSelectAll,
+  rowActions,
 }: Props<T>) => {
   const navigate = useNavigate();
-
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable<T>({
-      columns: columns as any,
-      data,
-    });
+    useTable<T>({ columns: columns as any, data });
 
   const allSelected = data.length > 0 && selectedRows.size === data.length;
-  const someSelected =
-    selectedRows.size > 0 && selectedRows.size < data.length;
+  const someSelected = selectedRows.size > 0 && selectedRows.size < data.length;
+  const hasActions = !!rowActions?.length;
 
   const handleRowClick = (row: T) => {
     if (!enableRowClick || !getRowLink) return;
-
     navigate(getRowLink(row), {
       state: {
         data: row,
-        columns: columns.map((c) => ({
-          key: c.accessor,
-          label: c.Header,
-        })),
+        columns: columns.map((c) => ({ key: c.accessor, label: c.Header })),
       },
     });
   };
@@ -59,10 +57,9 @@ const EntityTable = <T extends { id: string | number }>({
         >
           <thead>
             {headerGroups.map((hg) => {
-              const { key, ...hgRest } = hg.getHeaderGroupProps();
-
+              const { key, ...rest } = hg.getHeaderGroupProps();
               return (
-                <tr key={key} {...hgRest}>
+                <tr key={key} {...rest}>
                   {onRowSelect && (
                     <th style={{ width: 40 }}>
                       <input
@@ -71,20 +68,16 @@ const EntityTable = <T extends { id: string | number }>({
                         ref={(el) => {
                           if (el) el.indeterminate = someSelected;
                         }}
-                        onChange={(e) =>
-                          onSelectAll?.(e.target.checked)
-                        }
+                        onChange={(e) => onSelectAll?.(e.target.checked)}
                       />
                     </th>
                   )}
-
                   {hg.headers.map((col) => {
-                    const { key, ...colRest } = col.getHeaderProps();
-
+                    const { key, ...rest } = col.getHeaderProps();
                     return (
                       <th
                         key={key}
-                        {...colRest}
+                        {...rest}
                         style={{
                           whiteSpace: "nowrap",
                           fontWeight: 800,
@@ -95,10 +88,9 @@ const EntityTable = <T extends { id: string | number }>({
                       </th>
                     );
                   })}
-
-                  <th style={{ width: 120, textAlign: "center" }}>
-                    Action
-                  </th>
+                  {hasActions && (
+                    <th style={{ width: 120, textAlign: "center" }}>Action</th>
+                  )}
                 </tr>
               );
             })}
@@ -108,8 +100,12 @@ const EntityTable = <T extends { id: string | number }>({
             {rows.length === 0 ? (
               <tr>
                 <td
-                  colSpan={columns.length + (onRowSelect ? 2 : 1)}
-                  className="text-center"
+                  colSpan={
+                    columns.length +
+                    (onRowSelect ? 1 : 0) +
+                    (hasActions ? 1 : 0)
+                  }
+                  className="text-center py-10 text-muted"
                 >
                   No data found
                 </td>
@@ -117,18 +113,18 @@ const EntityTable = <T extends { id: string | number }>({
             ) : (
               rows.map((row) => {
                 prepareRow(row);
-
-                const { key, ...rowRest } = row.getRowProps();
-                const rowId = row.original.id;
-                const isSelected = selectedRows.has(rowId);
+                const { key, ...rest } = row.getRowProps();
+                const isSelected = selectedRows.has(row.original.id);
 
                 return (
                   <tr
                     key={key}
-                    {...rowRest}
+                    {...rest}
                     onClick={() => handleRowClick(row.original)}
                     style={{
                       whiteSpace: "nowrap",
+                      cursor:
+                        enableRowClick && getRowLink ? "pointer" : "default",
                       backgroundColor: isSelected
                         ? "rgba(var(--bs-primary-rgb), 0.05)"
                         : undefined,
@@ -139,53 +135,45 @@ const EntityTable = <T extends { id: string | number }>({
                         <input
                           type="checkbox"
                           checked={isSelected}
-                          onChange={() => onRowSelect(rowId)}
+                          onChange={() => onRowSelect(row.original.id)}
                         />
                       </td>
                     )}
-
                     {row.cells.map((cell) => {
-                      const { key, ...cellRest } = cell.getCellProps();
-
+                      const { key, ...rest } = cell.getCellProps();
                       return (
-                        <td key={key} {...cellRest}>
+                        <td key={key} {...rest}>
                           {cell.render("Cell")}
                         </td>
                       );
                     })}
-
-                    <td onClick={(e) => e.stopPropagation()}>
-                      <div className="dropdown">
-                        <button
-                          className="btn btn-sm btn-light btn-active-light-primary"
-                          data-bs-toggle="dropdown"
-                        >
-                          Actions
-                        </button>
-
-                        <ul className="dropdown-menu">
-                          <li>
-                            <button
-                              className="dropdown-item"
-                              onClick={() => onEdit?.(row.original)}
-                            >
-                              Edit
-                            </button>
-                          </li>
-
-                          <li>
-                            <button
-                              className="dropdown-item text-danger"
-                              onClick={() =>
-                                console.log("Block", row.original)
-                              }
-                            >
-                              Block
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
+                    {hasActions && (
+                      <td
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ textAlign: "center" }}
+                      >
+                        <div className="dropdown">
+                          <button
+                            className="btn btn-sm btn-light btn-active-light-primary"
+                            data-bs-toggle="dropdown"
+                          >
+                            Actions
+                          </button>
+                          <ul className="dropdown-menu">
+                            {rowActions!.map((action) => (
+                              <li key={action.label}>
+                                <button
+                                  className={`dropdown-item ${action.className ?? ""}`}
+                                  onClick={() => action.onClick(row.original)}
+                                >
+                                  {action.label}
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 );
               })

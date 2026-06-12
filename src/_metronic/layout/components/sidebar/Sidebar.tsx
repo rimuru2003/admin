@@ -5,6 +5,7 @@ import {ILayout, useLayout} from '../../core'
 import {SidebarMenu} from './sidebar-menu/SidebarMenu'
 // import {SidebarFooter} from './SidebarFooter'
 import {SidebarLogo} from './SidebarLogo'
+// import { SidebarFooter } from './SidebarFooter'
 
 const Sidebar = () => {
   const {config} = useLayout()

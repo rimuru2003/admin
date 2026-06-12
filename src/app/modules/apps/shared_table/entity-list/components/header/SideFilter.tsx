@@ -1,69 +1,66 @@
-import { useState } from 'react'
-import { KTIcon } from '../../../../../../../_metronic/helpers'
+import { useState } from "react";
+import { KTIcon } from "../../../../../../../_metronic/helpers";
 
-type Range = {
-  min?: number
-  max?: number
-}
-
-type DateRange = {
-  from?: string
-  to?: string
-}
-
-type FilterValue = (string | number)[] | Range | DateRange
+type Range = { min?: number; max?: number };
+type DateRange = { from?: string; to?: string };
+type FilterValue = (string | number)[] | Range | DateRange;
 
 type FilterConfig =
   | {
-    key: string
-    label: string
-    type: 'select'
-    options: string[] | { label: string; value: string | number }[]
-  }
-  | { key: string; label: string; type: 'range' }
-  | { key: string; label: string; type: 'dateRange' }
+      key: string;
+      label: string;
+      type: "select";
+      options: string[] | { label: string; value: string | number }[];
+    }
+  | { key: string; label: string; type: "range" }
+  | { key: string; label: string; type: "dateRange" };
 
-const SideFilter = ({
-  filters,
-  onFilterChange,
-}: {
-  filters: FilterConfig[]
-  onFilterChange: (filters: Record<string, FilterValue>) => void
-}) => {
-  const [values, setValues] = useState<Record<string, FilterValue>>({})
-  const [open, setOpen] = useState<string | null>(null)
+type Props = {
+  filters: FilterConfig[];
+  onFilterChange: (filters: Record<string, FilterValue>) => void;
+};
 
-  const toggleValue = (key: string, value: string | number) => {
+const SideFilter = ({ filters, onFilterChange }: Props) => {
+  const [values, setValues] = useState<Record<string, FilterValue>>({});
+  const [open, setOpen] = useState<string | null>(null);
+
+  const toggleValue = (key: string, value: string | number) =>
     setValues((prev) => {
-      const current = (prev[key] as (string | number)[]) || []
+      const current = (prev[key] as (string | number)[]) || [];
       return {
         ...prev,
         [key]: current.includes(value)
           ? current.filter((v) => v !== value)
           : [...current, value],
-      }
-    })
-  }
+      };
+    });
 
-  const toggleAccordion = (key: string) => {
-    setOpen((prev) => (prev === key ? null : key))
-  }
-
-  const apply = () => onFilterChange(values)
-
-  const reset = () => {
-    setValues({})
-    onFilterChange({})
-  }
+  const setRange = (
+    key: string,
+    field: "min" | "max" | "from" | "to",
+    val: string,
+  ) =>
+    setValues((prev) => ({
+      ...prev,
+      [key]: {
+        ...(prev[key] as any),
+        [field]:
+          val === ""
+            ? undefined
+            : field === "min" || field === "max"
+              ? Number(val)
+              : val,
+      },
+    }));
 
   const getCount = (key: string) => {
-    const val = values[key]
-    if (!val) return 0
-    if (Array.isArray(val)) return val.length
-    if ('min' in val || 'max' in val) return val.min || val.max ? 1 : 0
-    if ('from' in val || 'to' in val) return val.from || val.to ? 1 : 0
-    return 0
-  }
+    const val = values[key];
+    if (!val) return 0;
+    if (Array.isArray(val)) return val.length;
+    if ("min" in val || "max" in val) return val.min || val.max ? 1 : 0;
+    if ("from" in val || "to" in val) return val.from || val.to ? 1 : 0;
+    return 0;
+  };
 
   return (
     <div className="card shadow-sm px-4">
@@ -76,7 +73,7 @@ const SideFilter = ({
           <div key={f.key} className="border-bottom">
             <div
               className="d-flex justify-content-between px-5 py-4 cursor-pointer"
-              onClick={() => toggleAccordion(f.key)}
+              onClick={() => setOpen((prev) => (prev === f.key ? null : f.key))}
             >
               <div className="fw-bold">
                 {f.label}
@@ -87,103 +84,66 @@ const SideFilter = ({
                 )}
               </div>
               <KTIcon
-                iconName={open === f.key ? 'minus' : 'plus'}
+                iconName={open === f.key ? "minus" : "plus"}
                 className="fs-2"
               />
             </div>
 
             {open === f.key && (
-              <div className="pb-4">
-                {f.type === 'select' && (
+              <div className="pb-4 px-2">
+                {f.type === "select" && (
                   <div className="mh-200px overflow-auto">
                     {f.options.map((opt) => {
-                      const optLabel = typeof opt === 'object' ? opt.label : opt
-                      const optValue = typeof opt === 'object' ? opt.value : opt // ← no String()
-
+                      const label = typeof opt === "object" ? opt.label : opt;
+                      const value = typeof opt === "object" ? opt.value : opt;
                       return (
-                        <label key={String(optValue)} className="form-check mb-2">
+                        <label key={String(value)} className="form-check mb-2">
                           <input
                             type="checkbox"
                             checked={(
                               (values[f.key] as (string | number)[]) || []
-                            ).includes(optValue)}
-                            onChange={() => toggleValue(f.key, optValue)}
+                            ).includes(value)}
+                            onChange={() => toggleValue(f.key, value)}
                           />
-                          <span className="mx-3">{optLabel}</span>
+                          <span className="mx-3">{label}</span>
                         </label>
-                      )
+                      );
                     })}
                   </div>
                 )}
 
-                {f.type === 'range' && (
+                {f.type === "range" && (
                   <div className="d-flex gap-2">
                     <input
                       type="number"
                       placeholder="Min"
                       className="form-control"
-                      value={(values[f.key] as Range)?.min ?? ''}
-                      onChange={(e) => {
-                        const val = e.target.value
-                        setValues((prev) => ({
-                          ...prev,
-                          [f.key]: {
-                            ...(prev[f.key] as Range),
-                            min: val === '' ? undefined : Number(val),
-                          },
-                        }))
-                      }}
+                      value={(values[f.key] as Range)?.min ?? ""}
+                      onChange={(e) => setRange(f.key, "min", e.target.value)}
                     />
                     <input
                       type="number"
                       placeholder="Max"
                       className="form-control"
-                      value={(values[f.key] as Range)?.max ?? ''}
-                      onChange={(e) => {
-                        const val = e.target.value
-                        setValues((prev) => ({
-                          ...prev,
-                          [f.key]: {
-                            ...(prev[f.key] as Range),
-                            max: val === '' ? undefined : Number(val),
-                          },
-                        }))
-                      }}
+                      value={(values[f.key] as Range)?.max ?? ""}
+                      onChange={(e) => setRange(f.key, "max", e.target.value)}
                     />
                   </div>
                 )}
 
-                {f.type === 'dateRange' && (
-                  <div className="gap-2">
+                {f.type === "dateRange" && (
+                  <div className="d-flex flex-column gap-2">
                     <input
                       type="date"
                       className="form-control"
-                      value={(values[f.key] as DateRange)?.from ?? ''}
-                      onChange={(e) => {
-                        const val = e.target.value
-                        setValues((prev) => ({
-                          ...prev,
-                          [f.key]: {
-                            ...(prev[f.key] as DateRange),
-                            from: val || undefined,
-                          },
-                        }))
-                      }}
+                      value={(values[f.key] as DateRange)?.from ?? ""}
+                      onChange={(e) => setRange(f.key, "from", e.target.value)}
                     />
                     <input
                       type="date"
                       className="form-control"
-                      value={(values[f.key] as DateRange)?.to ?? ''}
-                      onChange={(e) => {
-                        const val = e.target.value
-                        setValues((prev) => ({
-                          ...prev,
-                          [f.key]: {
-                            ...(prev[f.key] as DateRange),
-                            to: val || undefined,
-                          },
-                        }))
-                      }}
+                      value={(values[f.key] as DateRange)?.to ?? ""}
+                      onChange={(e) => setRange(f.key, "to", e.target.value)}
                     />
                   </div>
                 )}
@@ -194,15 +154,24 @@ const SideFilter = ({
       </div>
 
       <div className="card-footer d-flex gap-2">
-        <button className="btn btn-light w-100" onClick={reset}>
+        <button
+          className="btn btn-light w-100"
+          onClick={() => {
+            setValues({});
+            onFilterChange({});
+          }}
+        >
           Reset
         </button>
-        <button className="btn btn-primary w-100" onClick={apply}>
+        <button
+          className="btn btn-primary w-100"
+          onClick={() => onFilterChange(values)}
+        >
           Apply
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export { SideFilter }
+export { SideFilter };

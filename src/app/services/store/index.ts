@@ -1,12 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import seekerReducer from "../features/seeker/seekerSlice";
-import organizationReducer from "../features/organization/orgrSlice";
+import organizationReducer from "../features/organization/organization.slice";
 // import soloReducer from "../features/solo/soloSlice";
-import staffReducer from "../features/staff/staffSlice";
-import ServiceGroupReducer from "../features/service_group/service_groupSlice";
-
-
+import staffReducer from "../features/staff/staff.slice";
+import serviceGroupReducer from "../features/service/service_service_list.slice";
+import emailTemplatesReducer from "../features/email_template/email-template.slice";
 import authReducer from "../../modules/auth/core/auth.store";
+import plansReducer from "../features/subscriptions/plan.slice";
+import propertyListReducer from "../features/properties/property.slice";
 
 export const store = configureStore({
   reducer: {
@@ -14,7 +15,10 @@ export const store = configureStore({
     organization: organizationReducer,
     // solo: soloReducer,
     staff: staffReducer,
-    ServiceGroup: ServiceGroupReducer,
+    plans: plansReducer,
+    serviceGroup: serviceGroupReducer,
+    emailTemplates: emailTemplatesReducer,
+    propertyList: propertyListReducer,
 
     auth: authReducer,
   },

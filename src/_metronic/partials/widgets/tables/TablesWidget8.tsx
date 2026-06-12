@@ -1,12 +1,116 @@
 
 import { FC } from 'react'
-import {KTIcon} from '../../../helpers'
+import { KTIcon } from '../../../helpers'
 
 type Props = {
   className: string
 }
 
-const TablesWidget8: FC<Props> = ({className}) => {
+const monthData = [
+  {
+    icon: 'scroll',
+    bg: 'bg-light-danger',
+    color: 'text-danger',
+    title: 'School Music Festival',
+    author: 'by Rose Liam',
+    date: '4:20PM, 03 Sep',
+  },
+  {
+    icon: 'category',
+    bg: 'bg-light-warning',
+    color: 'text-warning',
+    title: 'Maths Championship',
+    author: 'By Tom Gere',
+    date: '10:05PM, 25 Oct',
+  },
+  {
+    icon: 'compass',
+    bg: 'bg-light-info',
+    color: 'text-info',
+    title: 'Who Knows Geography',
+    author: 'By Zoey Dylan',
+    date: '3:22PM, 07 Sep',
+  },
+  {
+    icon: 'abstract-26',
+    bg: 'bg-light-primary',
+    color: 'text-primary',
+    title: 'Napoleon Days',
+    author: 'By Luke Owen',
+    date: '1:20PM, 02 Dec',
+  },
+  {
+    icon: 'bucket',
+    bg: 'bg-light-success',
+    color: 'text-success',
+    title: 'The School Art Leads',
+    author: 'By Ellie Cole',
+    date: '6:20PM, 07 Sep',
+  },
+]
+
+const weekData = [
+  {
+    icon: 'compass',
+    bg: 'bg-light-info',
+    color: 'text-info',
+    title: 'Who Knows Geography',
+    author: 'By Zoey Dylan',
+    date: '3:22PM, 07 Sep',
+  },
+  {
+    icon: 'category',
+    bg: 'bg-light-warning',
+    color: 'text-warning',
+    title: 'Maths Championship',
+    author: 'By Tom Gere',
+    date: '10:05PM, 25 Oct',
+  },
+  {
+    icon: 'scroll',
+    bg: 'bg-light-danger',
+    color: 'text-danger',
+    title: 'School Music Festival',
+    author: 'by Rose Liam',
+    date: '4:20PM, 03 Sep',
+  },
+]
+
+const dayData = [
+  {
+    icon: 'category',
+    bg: 'bg-light-warning',
+    color: 'text-warning',
+    title: 'Maths Championship',
+    author: 'By Tom Gere',
+    date: '10:05PM, 25 Oct',
+  },
+  {
+    icon: 'compass',
+    bg: 'bg-light-info',
+    color: 'text-info',
+    title: 'Who Knows Geography',
+    author: 'By Zoey Dylan',
+    date: '3:22PM, 07 Sep',
+  },
+  {
+    icon: 'abstract-26',
+    bg: 'bg-light-primary',
+    color: 'text-primary',
+    title: 'Napoleon Days',
+    author: 'By Luke Owen',
+    date: '1:20PM, 02 Dec',
+  },
+  {
+    icon: 'scroll',
+    bg: 'bg-light-danger',
+    color: 'text-danger',
+    title: 'School Music Festival',
+    author: 'by Rose Liam',
+    date: '4:20PM, 03 Sep',
+  },
+]
+const TablesWidget8: FC<Props> = ({ className }) => {
   return (
     <div className={`card ${className}`}>
       {/* begin::Header */}
@@ -68,141 +172,52 @@ const TablesWidget8: FC<Props> = ({className}) => {
                 {/* end::Table head */}
                 {/* begin::Table body */}
                 <tbody>
-                  <tr>
-                    <td>
-                      <div className='symbol symbol-50px me-2'>
-                        <span className='symbol-label bg-light-danger'>
-                          <KTIcon iconName='scroll' className='fs-2x text-danger' />
+                  {dayData.map((item, index) => (
+                    <tr key={index}>
+                      <td>
+                        <div className='symbol symbol-50px me-2'>
+                          <span className={`symbol-label ${item.bg}`}>
+                            <KTIcon
+                              iconName={item.icon}
+                              className={`fs-2x ${item.color}`}
+                            />
+                          </span>
+                        </div>
+                      </td>
+
+                      <td>
+                        <a
+                          href='#'
+                          className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'
+                        >
+                          {item.title}
+                        </a>
+
+                        <span className='text-muted fw-semibold d-block fs-7'>
+                          {item.author}
                         </span>
-                      </div>
-                    </td>
-                    <td>
-                      <a href='#' className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'>
-                        School Music Festival
-                      </a>
-                      <span className='text-muted fw-semibold d-block fs-7'>by Rose Liam</span>
-                    </td>
-                    <td className='text-end'>
-                      <span className='text-gray-900 fw-bold d-block fs-7'>4:20PM, 03 Sep</span>
-                      <span className='text-muted fw-semibold d-block fs-8'>Date</span>
-                    </td>
-                    <td className='text-end'>
-                      <a
-                        href='#'
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                      >
-                        <i className='bi bi-three-dots fs-5'></i>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className='symbol symbol-50px me-2'>
-                        <span className='symbol-label bg-light-warning'>
-                          <KTIcon iconName='category' className='fs-2x text-warning' />
+                      </td>
+
+                      <td className='text-end'>
+                        <span className='text-gray-900 fw-bold d-block fs-7'>
+                          {item.date}
                         </span>
-                      </div>
-                    </td>
-                    <td>
-                      <a href='#' className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'>
-                        Maths Championship
-                      </a>
-                      <span className='text-muted fw-semibold d-block fs-7'>By Tom Gere</span>
-                    </td>
-                    <td className='text-end'>
-                      <span className='text-gray-900 fw-bold d-block fs-7'>10:05PM, 25 Oct</span>
-                      <span className='text-muted fw-semibold d-block fs-8'>Date</span>
-                    </td>
-                    <td className='text-end'>
-                      <a
-                        href='#'
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                      >
-                        <i className='bi bi-three-dots fs-5'></i>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className='symbol symbol-50px me-2'>
-                        <span className='symbol-label bg-light-info'>
-                          <KTIcon iconName='compass' className='fs-2x text-info' />
+
+                        <span className='text-muted fw-semibold d-block fs-8'>
+                          Date
                         </span>
-                      </div>
-                    </td>
-                    <td>
-                      <a href='#' className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'>
-                        Who Knows Geography
-                      </a>
-                      <span className='text-muted fw-semibold d-block fs-7'>By Zoey Dylan</span>
-                    </td>
-                    <td className='text-end'>
-                      <span className='text-gray-900 fw-bold d-block fs-7'>3:22PM, 07 Sep</span>
-                      <span className='text-muted fw-semibold d-block fs-8'>Date</span>
-                    </td>
-                    <td className='text-end'>
-                      <a
-                        href='#'
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                      >
-                        <i className='bi bi-three-dots fs-5'></i>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className='symbol symbol-50px me-2'>
-                        <span className='symbol-label bg-light-primary'>
-                          <KTIcon iconName='abstract-26' className='fs-2x text-primary' />
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <a href='#' className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'>
-                        Napoleon Days
-                      </a>
-                      <span className='text-muted fw-semibold d-block fs-7'>By Luke Owen</span>
-                    </td>
-                    <td className='text-end'>
-                      <span className='text-gray-900 fw-bold d-block fs-7'>1:20PM, 02 Dec</span>
-                      <span className='text-muted fw-semibold d-block fs-8'>Date</span>
-                    </td>
-                    <td className='text-end'>
-                      <a
-                        href='#'
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                      >
-                        <i className='bi bi-three-dots fs-5'></i>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className='symbol symbol-50px me-2'>
-                        <span className='symbol-label bg-light-success'>
-                          <KTIcon iconName='bucket' className='fs-2x text-success' />
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <a href='#' className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'>
-                        The School Art Leads
-                      </a>
-                      <span className='text-muted fw-semibold d-block fs-7'>By Ellie Cole</span>
-                    </td>
-                    <td className='text-end'>
-                      <span className='text-gray-900 fw-bold d-block fs-7'>6:20PM, 07 Sep</span>
-                      <span className='text-muted fw-semibold d-block fs-8'>Date</span>
-                    </td>
-                    <td className='text-end'>
-                      <a
-                        href='#'
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                      >
-                        <i className='bi bi-three-dots fs-5'></i>
-                      </a>
-                    </td>
-                  </tr>
+                      </td>
+
+                      <td className='text-end'>
+                        <a
+                          href='#'
+                          className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
+                        >
+                          <i className='bi bi-three-dots fs-5'></i>
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
                 {/* end::Table body */}
               </table>
@@ -227,87 +242,52 @@ const TablesWidget8: FC<Props> = ({className}) => {
                 {/* end::Table head */}
                 {/* begin::Table body */}
                 <tbody>
-                  <tr>
-                    <td>
-                      <div className='symbol symbol-50px me-2'>
-                        <span className='symbol-label bg-light-info'>
-                          <KTIcon iconName='compass' className='fs-2x text-info' />
+                  {monthData.map((item, index) => (
+                    <tr key={index}>
+                      <td>
+                        <div className='symbol symbol-50px me-2'>
+                          <span className={`symbol-label ${item.bg}`}>
+                            <KTIcon
+                              iconName={item.icon}
+                              className={`fs-2x ${item.color}`}
+                            />
+                          </span>
+                        </div>
+                      </td>
+
+                      <td>
+                        <a
+                          href='#'
+                          className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'
+                        >
+                          {item.title}
+                        </a>
+
+                        <span className='text-muted fw-semibold d-block fs-7'>
+                          {item.author}
                         </span>
-                      </div>
-                    </td>
-                    <td>
-                      <a href='#' className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'>
-                        Who Knows Geography
-                      </a>
-                      <span className='text-muted fw-semibold d-block fs-7'>By Zoey Dylan</span>
-                    </td>
-                    <td className='text-end'>
-                      <span className='text-gray-900 fw-bold d-block fs-7'>3:22PM, 07 Sep</span>
-                      <span className='text-muted fw-semibold d-block fs-8'>Date</span>
-                    </td>
-                    <td className='text-end'>
-                      <a
-                        href='#'
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                      >
-                        <i className='bi bi-three-dots fs-5'></i>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className='symbol symbol-50px me-2'>
-                        <span className='symbol-label bg-light-warning'>
-                          <KTIcon iconName='category' className='fs-2x text-warning' />
+                      </td>
+
+                      <td className='text-end'>
+                        <span className='text-gray-900 fw-bold d-block fs-7'>
+                          {item.date}
                         </span>
-                      </div>
-                    </td>
-                    <td>
-                      <a href='#' className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'>
-                        Maths Championship
-                      </a>
-                      <span className='text-muted fw-semibold d-block fs-7'>By Tom Gere</span>
-                    </td>
-                    <td className='text-end'>
-                      <span className='text-gray-900 fw-bold d-block fs-7'>10:05PM, 25 Oct</span>
-                      <span className='text-muted fw-semibold d-block fs-8'>Date</span>
-                    </td>
-                    <td className='text-end'>
-                      <a
-                        href='#'
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                      >
-                        <i className='bi bi-three-dots fs-5'></i>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className='symbol symbol-50px me-2'>
-                        <span className='symbol-label bg-light-danger'>
-                          <KTIcon iconName='scroll' className='fs-2x text-danger' />
+
+                        <span className='text-muted fw-semibold d-block fs-8'>
+                          Date
                         </span>
-                      </div>
-                    </td>
-                    <td>
-                      <a href='#' className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'>
-                        School Music Festival
-                      </a>
-                      <span className='text-muted fw-semibold d-block fs-7'>by Rose Liam</span>
-                    </td>
-                    <td className='text-end'>
-                      <span className='text-gray-900 fw-bold d-block fs-7'>4:20PM, 03 Sep</span>
-                      <span className='text-muted fw-semibold d-block fs-8'>Date</span>
-                    </td>
-                    <td className='text-end'>
-                      <a
-                        href='#'
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                      >
-                        <i className='bi bi-three-dots fs-5'></i>
-                      </a>
-                    </td>
-                  </tr>
+                      </td>
+
+                      <td className='text-end'>
+                        <a
+                          href='#'
+                          className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
+                        >
+                          <i className='bi bi-three-dots fs-5'></i>
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
                 {/* end::Table body */}
               </table>
@@ -332,114 +312,52 @@ const TablesWidget8: FC<Props> = ({className}) => {
                 {/* end::Table head */}
                 {/* begin::Table body */}
                 <tbody>
-                  <tr>
-                    <td>
-                      <div className='symbol symbol-50px me-2'>
-                        <span className='symbol-label bg-light-warning'>
-                          <KTIcon iconName='category' className='fs-2x text-warning' />
+                  {weekData.map((item, index) => (
+                    <tr key={index}>
+                      <td>
+                        <div className='symbol symbol-50px me-2'>
+                          <span className={`symbol-label ${item.bg}`}>
+                            <KTIcon
+                              iconName={item.icon}
+                              className={`fs-2x ${item.color}`}
+                            />
+                          </span>
+                        </div>
+                      </td>
+
+                      <td>
+                        <a
+                          href='#'
+                          className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'
+                        >
+                          {item.title}
+                        </a>
+
+                        <span className='text-muted fw-semibold d-block fs-7'>
+                          {item.author}
                         </span>
-                      </div>
-                    </td>
-                    <td>
-                      <a href='#' className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'>
-                        Maths Championship
-                      </a>
-                      <span className='text-muted fw-semibold d-block fs-7'>By Tom Gere</span>
-                    </td>
-                    <td className='text-end'>
-                      <span className='text-gray-900 fw-bold d-block fs-7'>10:05PM, 25 Oct</span>
-                      <span className='text-muted fw-semibold d-block fs-8'>Date</span>
-                    </td>
-                    <td className='text-end'>
-                      <a
-                        href='#'
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                      >
-                        <i className='bi bi-three-dots fs-5'></i>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className='symbol symbol-50px me-2'>
-                        <span className='symbol-label bg-light-info'>
-                          <KTIcon iconName='compass' className='fs-2x text-info' />
+                      </td>
+
+                      <td className='text-end'>
+                        <span className='text-gray-900 fw-bold d-block fs-7'>
+                          {item.date}
                         </span>
-                      </div>
-                    </td>
-                    <td>
-                      <a href='#' className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'>
-                        Who Knows Geography
-                      </a>
-                      <span className='text-muted fw-semibold d-block fs-7'>By Zoey Dylan</span>
-                    </td>
-                    <td className='text-end'>
-                      <span className='text-gray-900 fw-bold d-block fs-7'>3:22PM, 07 Sep</span>
-                      <span className='text-muted fw-semibold d-block fs-8'>Date</span>
-                    </td>
-                    <td className='text-end'>
-                      <a
-                        href='#'
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                      >
-                        <i className='bi bi-three-dots fs-5'></i>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className='symbol symbol-50px me-2'>
-                        <span className='symbol-label bg-light-primary'>
-                          <KTIcon iconName='abstract-26' className='fs-2x text-primary' />
+
+                        <span className='text-muted fw-semibold d-block fs-8'>
+                          Date
                         </span>
-                      </div>
-                    </td>
-                    <td>
-                      <a href='#' className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'>
-                        Napoleon Days
-                      </a>
-                      <span className='text-muted fw-semibold d-block fs-7'>By Luke Owen</span>
-                    </td>
-                    <td className='text-end'>
-                      <span className='text-gray-900 fw-bold d-block fs-7'>1:20PM, 02 Dec</span>
-                      <span className='text-muted fw-semibold d-block fs-8'>Date</span>
-                    </td>
-                    <td className='text-end'>
-                      <a
-                        href='#'
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                      >
-                        <i className='bi bi-three-dots fs-5'></i>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className='symbol symbol-50px me-2'>
-                        <span className='symbol-label bg-light-danger'>
-                          <KTIcon iconName='scroll' className='fs-2x text-danger' />
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <a href='#' className='text-gray-900 fw-bold text-hover-primary mb-1 fs-6'>
-                        School Music Festival
-                      </a>
-                      <span className='text-muted fw-semibold d-block fs-7'>by Rose Liam</span>
-                    </td>
-                    <td className='text-end'>
-                      <span className='text-gray-900 fw-bold d-block fs-7'>4:20PM, 03 Sep</span>
-                      <span className='text-muted fw-semibold d-block fs-8'>Date</span>
-                    </td>
-                    <td className='text-end'>
-                      <a
-                        href='#'
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                      >
-                        <i className='bi bi-three-dots fs-5'></i>
-                      </a>
-                    </td>
-                  </tr>
+                      </td>
+
+                      <td className='text-end'>
+                        <a
+                          href='#'
+                          className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
+                        >
+                          <i className='bi bi-three-dots fs-5'></i>
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
                 {/* end::Table body */}
               </table>
@@ -454,4 +372,4 @@ const TablesWidget8: FC<Props> = ({className}) => {
   )
 }
 
-export {TablesWidget8}
+export { TablesWidget8 }

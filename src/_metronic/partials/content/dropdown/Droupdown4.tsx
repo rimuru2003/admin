@@ -90,6 +90,42 @@ export function Dropdown4({ setStartDate, setEndDate }: Props) {
 
       <div className="px-7 py-5">
 
+        <div className='mb-10'>
+          <label className='form-label fw-bold'>Member Type:</label>
+
+          <div className='d-flex'>
+            <label className='form-check form-check-sm form-check-custom form-check-solid me-5'>
+              <input className='form-check-input' type='checkbox' value='1' />
+              <span className='form-check-label'>Organization</span>
+            </label>
+
+            <label className='form-check form-check-sm form-check-custom form-check-solid'>
+              <input className='form-check-input' type='checkbox' value='2' defaultChecked={true} />
+              <span className='form-check-label'>Solo Trader</span>
+            </label>
+          </div>
+        </div>
+
+        <div className='mb-10'>
+          <label className='form-label fw-bold'>Status:</label>
+
+          <div>
+            <select
+              className='form-select form-select-solid'
+              data-kt-select2='true'
+              data-placeholder='Select option'
+              data-allow-clear='true'
+              defaultValue={'1'}
+            >
+              <option></option>
+              <option value='1'>Pro Plans</option>
+              <option value='2'>Enterprise Plan</option>
+              <option value='3'>Solo Plan</option>
+              <option value='4'>Basic Plan</option>
+            </select>
+          </div>
+        </div>
+
         {/* Tabs */}
         <ul className="nav nav-tabs nav-line-tabs mb-5 fs-6">
 
@@ -210,6 +246,8 @@ export function Dropdown4({ setStartDate, setEndDate }: Props) {
             />
           </>
         )}
+
+
 
         <div className="d-flex justify-content-end mt-5">
 

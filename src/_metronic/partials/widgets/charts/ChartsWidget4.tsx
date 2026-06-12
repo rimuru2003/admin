@@ -1,16 +1,17 @@
-
-import {useEffect, useRef, FC} from 'react'
-import ApexCharts, {ApexOptions} from 'apexcharts'
-import {getCSS, getCSSVariableValue} from '../../../assets/ts/_utils'
-import {useThemeMode} from '../../layout/theme-mode/ThemeModeProvider'
+import { useEffect, useRef, useState, FC } from 'react'
+import ApexCharts, { ApexOptions } from 'apexcharts'
+import { getCSS, getCSSVariableValue } from '../../../assets/ts/_utils'
+import { useThemeMode } from '../../layout/theme-mode/ThemeModeProvider'
 
 type Props = {
   className: string
 }
 
-const ChartsWidget4: FC<Props> = ({className}) => {
+const ChartsWidget4: FC<Props> = ({ className }) => {
   const chartRef = useRef<HTMLDivElement | null>(null)
-  const {mode} = useThemeMode()
+  const { mode } = useThemeMode()
+
+  const [period, setPeriod] = useState<'year' | 'month' | 'week'>('year')
 
   const refreshChart = () => {
     if (!chartRef.current) {
@@ -19,10 +20,12 @@ const ChartsWidget4: FC<Props> = ({className}) => {
 
     const height = parseInt(getCSS(chartRef.current, 'height'))
 
-    const chart = new ApexCharts(chartRef.current, getChartOptions(height))
-    if (chart) {
-      chart.render()
-    }
+    const chart = new ApexCharts(
+      chartRef.current,
+      getChartOptions(height, period)
+    )
+
+    chart.render()
 
     return chart
   }
@@ -35,114 +38,185 @@ const ChartsWidget4: FC<Props> = ({className}) => {
         chart.destroy()
       }
     }
-  }, [chartRef, mode])
+  }, [mode, period])
 
   return (
     <div className={`card ${className}`}>
-      {/* begin::Header */}
+      {/* Header */}
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>Recent Customers</span>
+          <span className='card-label fw-bold fs-3 mb-1'>
+            Clients
+          </span>
 
-          <span className='text-muted fw-semibold fs-7'>More than 500 new customers</span>
+          <span className='text-muted fw-semibold fs-7'>
+            More than 500 new customers
+          </span>
         </h3>
 
-        {/* begin::Toolbar */}
-        <div className='card-toolbar' data-kt-buttons='true'>
-          <a
-            className='btn btn-sm btn-color-muted btn-active btn-active-primary active px-4 me-1'
-            id='kt_charts_widget_4_year_btn'
+        {/* Toolbar */}
+        <div className='card-toolbar'>
+          <button
+            type='button'
+            onClick={() => setPeriod('year')}
+            className={`btn btn-sm me-2 ${period === 'year'
+              ? 'btn-light-primary'
+              : 'btn-color-muted '
+              }`}
           >
             Year
-          </a>
+          </button>
 
-          <a
-            className='btn btn-sm btn-color-muted btn-active btn-active-primary px-4 me-1'
-            id='kt_charts_widget_4_month_btn'
+          <button
+            type='button'
+            onClick={() => setPeriod('month')}
+            className={`btn btn-sm me-2 ${period === 'month'
+              ? 'btn-light-primary'
+              : 'btn-color-muted '
+              }`}
           >
             Month
-          </a>
+          </button>
 
-          <a
-            className='btn btn-sm btn-color-muted btn-active btn-active-primary px-4'
-            id='kt_charts_widget_4_week_btn'
+          <button
+            type='button'
+            onClick={() => setPeriod('week')}
+            className={`btn btn-sm ${period === 'week'
+              ? 'btn-light-primary'
+              : 'btn-color-muted '
+              }`}
           >
             Week
-          </a>
+          </button>
         </div>
-        {/* end::Toolbar */}
       </div>
-      {/* end::Header */}
 
-      {/* begin::Body */}
+      {/* Body */}
       <div className='card-body'>
-        {/* begin::Chart */}
-        <div ref={chartRef} id='kt_charts_widget_4_chart' style={{height: '350px'}}></div>
-        {/* end::Chart */}
+        <div
+          ref={chartRef}
+          id='kt_charts_widget_4_chart'
+          style={{ height: '350px' }}
+        />
       </div>
-      {/* end::Body */}
     </div>
   )
 }
 
-export {ChartsWidget4}
+export { ChartsWidget4 }
 
-function getChartOptions(height: number): ApexOptions {
+function getChartOptions(
+  height: number,
+  period: 'year' | 'month' | 'week'
+): ApexOptions {
   const labelColor = getCSSVariableValue('--bs-gray-500')
   const borderColor = getCSSVariableValue('--bs-gray-200')
 
   const baseColor = getCSSVariableValue('--bs-success')
   const baseLightColor = getCSSVariableValue('--bs-success-light')
+
   const secondaryColor = getCSSVariableValue('--bs-warning')
   const secondaryLightColor = getCSSVariableValue('--bs-warning-light')
+
+  let categories: string[] = []
+  let profitData: number[] = []
+  let revenueData: number[] = []
+
+  switch (period) {
+    case 'year':
+      categories = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ]
+
+      profitData = [76, 85, 101, 98, 87, 105, 111, 123, 67, 11, 76, 90]
+
+      revenueData = [44, 55, 57, 56, 61, 58, 66, 33, 20, 77, 89, 50]
+      break
+
+    case 'month':
+      categories = ['Week 1', 'Week 2', 'Week 3', 'Week 4']
+
+      profitData = [120, 180, 150, 210]
+
+      revenueData = [90, 140, 130, 160]
+      break
+
+    case 'week':
+      categories = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+      profitData = [22, 35, 18, 40, 45, 28, 32]
+
+      revenueData = [15, 20, 16, 25, 30, 22, 18]
+      break
+  }
 
   return {
     series: [
       {
-        name: 'Net Profit',
-        data: [60, 50, 80, 40, 100, 60],
+        name: 'Organization',
+        data: profitData,
       },
       {
-        name: 'Revenue',
-        data: [70, 60, 110, 40, 50, 70],
+        name: 'Solo Traders',
+        data: revenueData,
       },
     ],
+
     chart: {
       fontFamily: 'inherit',
       type: 'area',
-      height: height,
+      height,
       toolbar: {
         show: false,
       },
     },
-    plotOptions: {},
+
     legend: {
       show: false,
     },
+
     dataLabels: {
       enabled: false,
     },
+
     fill: {
       type: 'solid',
       opacity: 1,
     },
+
     stroke: {
       curve: 'smooth',
     },
+
     xaxis: {
-      categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+      categories,
+
       axisBorder: {
         show: false,
       },
+
       axisTicks: {
         show: false,
       },
+
       labels: {
         style: {
           colors: labelColor,
           fontSize: '12px',
         },
       },
+
       crosshairs: {
         position: 'front',
         stroke: {
@@ -151,15 +225,8 @@ function getChartOptions(height: number): ApexOptions {
           dashArray: 3,
         },
       },
-      tooltip: {
-        enabled: true,
-        formatter: undefined,
-        offsetY: 0,
-        style: {
-          fontSize: '12px',
-        },
-      },
     },
+
     yaxis: {
       labels: {
         style: {
@@ -168,47 +235,30 @@ function getChartOptions(height: number): ApexOptions {
         },
       },
     },
-    states: {
-      normal: {
-        filter: {
-          type: 'none',
-          value: 0,
-        },
-      },
-      hover: {
-        filter: {
-          type: 'none',
-          value: 0,
-        },
-      },
-      active: {
-        allowMultipleDataPointsSelection: false,
-        filter: {
-          type: 'none',
-          value: 0,
-        },
-      },
-    },
+
     tooltip: {
       style: {
         fontSize: '12px',
       },
+
       y: {
-        formatter: function (val) {
-          return '$' + val + ' thousands'
-        },
+        formatter: (val) => `$${val} thousands`,
       },
     },
+
     colors: [baseColor, secondaryColor],
+
     grid: {
-      borderColor: borderColor,
+      borderColor,
       strokeDashArray: 4,
+
       yaxis: {
         lines: {
           show: true,
         },
       },
     },
+
     markers: {
       colors: [baseLightColor, secondaryLightColor],
       strokeColors: [baseLightColor, secondaryLightColor],
