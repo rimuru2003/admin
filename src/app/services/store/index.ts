@@ -8,6 +8,9 @@ import emailTemplatesReducer from "../features/email_template/email-template.sli
 import authReducer from "../../modules/auth/core/auth.store";
 import plansReducer from "../features/subscriptions/plan.slice";
 import propertyListReducer from "../features/properties/property.slice";
+import orderReducer from "../features/orders/order.slice";
+import planRequestReducer from "../features/plan_requests/plan-request.slice";
+import couponeducer from "../features/coupons/coupon.slice";
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +22,9 @@ export const store = configureStore({
     serviceGroup: serviceGroupReducer,
     emailTemplates: emailTemplatesReducer,
     propertyList: propertyListReducer,
+    orders: orderReducer,
+    planRequests: planRequestReducer,
+    coupons: couponeducer,
 
     auth: authReducer,
   },

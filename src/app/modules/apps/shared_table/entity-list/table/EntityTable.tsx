@@ -2,10 +2,11 @@ import { useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
 import { KTCardBody } from "../../../../../../_metronic/helpers";
 import type { Column as CustomColumn } from "../EntityList";
-
+import { getAuth } from "../../../../auth/core/AuthHelpers";
 export type RowAction<T> = {
   label: string;
   className?: string;
+  permission?: string;
   onClick: (row: T) => void;
 };
 
@@ -33,11 +34,15 @@ const EntityTable = <T extends { id: string | number }>({
   const navigate = useNavigate();
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable<T>({ columns: columns as any, data });
-
+  const auth = getAuth();
+  const abilities = auth?.abilities ?? [];
   const allSelected = data.length > 0 && selectedRows.size === data.length;
   const someSelected = selectedRows.size > 0 && selectedRows.size < data.length;
-  const hasActions = !!rowActions?.length;
-
+  const visibleActions =
+    rowActions?.filter(
+      (action) => !action.permission || abilities.includes(action.permission),
+    ) ?? [];
+  const hasActions = visibleActions.length > 0;
   const handleRowClick = (row: T) => {
     if (!enableRowClick || !getRowLink) return;
     navigate(getRowLink(row), {
@@ -160,7 +165,7 @@ const EntityTable = <T extends { id: string | number }>({
                             Actions
                           </button>
                           <ul className="dropdown-menu">
-                            {rowActions!.map((action) => (
+                            {visibleActions!.map((action) => (
                               <li key={action.label}>
                                 <button
                                   className={`dropdown-item ${action.className ?? ""}`}

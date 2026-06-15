@@ -1,51 +1,88 @@
 import axiosInstance from "../../api/axiosInstance";
-import type { Coupon, CouponFormValues, CouponValidationValues } from "./coupon.types";
+import { getAuth } from "../../../modules/auth/core/AuthHelpers";
+import { buildApiParams } from "../../utils/buildApiParams";
 
-type ApiEnvelope = {
-  success: boolean;
-  message: string;
-  data: Coupon | Coupon[] | { valid: boolean; discount_amount?: number; coupon?: Coupon };
+import type {
+  Coupon,
+  CouponFormValues,
+  CouponValidationValues,
+} from "./coupon.types";
+
+export type GetCouponParams = {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  sort?: string;
+  direction?: "asc" | "desc";
+  filters?: Record<string, any>;
 };
 
-const path = (scope: "admin" | "super-admin") => `/${scope}/coupons`;
+const getCouponBasePath = () => {
+  const auth = getAuth();
+  const abilities = auth?.abilities ?? [];
 
-export const fetchCouponsApi = async (scope: "admin" | "super-admin"): Promise<Coupon[]> => {
-  const response = await axiosInstance.get<ApiEnvelope>(path(scope));
-  return Array.isArray(response.data.data) ? (response.data.data as Coupon[]) : [];
+  return abilities.includes("super_admin") ? "/super-admin" : "/admin";
 };
 
-export const createCouponApi = async (scope: "admin" | "super-admin", payload: CouponFormValues): Promise<Coupon> => {
-  const response = await axiosInstance.post<ApiEnvelope>(path(scope), payload);
-  return response.data.data as Coupon;
+export const fetchCouponsApi = async (params: GetCouponParams) => {
+  const res = await axiosInstance.get(`${getCouponBasePath()}/coupons`, {
+    params: buildApiParams(params),
+  });
+
+  const { data, meta } = res.data || {};
+
+  return {
+    data: data ?? [],
+    total: meta?.pagination?.total ?? 0,
+  };
+};
+
+export const createCouponApi = async (payload: CouponFormValues) => {
+  const res = await axiosInstance.post(
+    `${getCouponBasePath()}/coupons`,
+    payload,
+  );
+
+  return res.data;
 };
 
 export const updateCouponApi = async (
-  scope: "admin" | "super-admin",
   id: string,
   payload: CouponFormValues,
-): Promise<Coupon> => {
-  const response = await axiosInstance.patch<ApiEnvelope>(`${path(scope)}/${id}`, payload);
-  return response.data.data as Coupon;
+) => {
+  const res = await axiosInstance.patch(
+    `${getCouponBasePath()}/coupons/${id}`,
+    payload,
+  );
+
+  return res.data;
 };
 
-export const deleteCouponApi = async (scope: "admin" | "super-admin", id: string): Promise<void> => {
-  await axiosInstance.delete(`${path(scope)}/${id}`);
+export const deleteCouponApi = async (id: string) => {
+  await axiosInstance.delete(`${getCouponBasePath()}/coupons/${id}`);
 };
 
-export const activateCouponApi = async (id: string): Promise<Coupon> => {
-  const response = await axiosInstance.post<ApiEnvelope>(`/super-admin/coupons/${id}/activate`);
-  return response.data.data as Coupon;
+export const activateCouponApi = async (id: string) => {
+  const res = await axiosInstance.post(
+    `${getCouponBasePath()}/coupons/${id}/activate`,
+  );
+
+  return res.data;
 };
 
-export const deactivateCouponApi = async (id: string): Promise<Coupon> => {
-  const response = await axiosInstance.post<ApiEnvelope>(`/super-admin/coupons/${id}/deactivate`);
-  return response.data.data as Coupon;
+export const deactivateCouponApi = async (id: string) => {
+  const res = await axiosInstance.post(
+    `${getCouponBasePath()}/coupons/${id}/deactivate`,
+  );
+
+  return res.data;
 };
 
-export const validateCouponApi = async (
-  scope: "admin" | "super-admin",
-  payload: CouponValidationValues,
-): Promise<{ valid: boolean; discount_amount?: number; coupon?: Coupon }> => {
-  const response = await axiosInstance.post<ApiEnvelope>(`${path(scope)}/validate`, payload);
-  return response.data.data as { valid: boolean; discount_amount?: number; coupon?: Coupon };
+export const validateCouponApi = async (payload: CouponValidationValues) => {
+  const res = await axiosInstance.post(
+    `${getCouponBasePath()}/coupons/validate`,
+    payload,
+  );
+
+  return res.data;
 };

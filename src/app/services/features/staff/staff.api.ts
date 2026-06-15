@@ -27,6 +27,13 @@ export const createStaffApi = async (payload: StaffFormValues) => {
 };
 
 export const updateStaffApi = async (id: string, payload: StaffFormValues) => {
-  const res = await axiosInstance.put(`${getStaffBasePath()}/staff/${id}`, payload);
+  const res = await axiosInstance.put(
+    `${getStaffBasePath()}/staff/${id}`,
+    payload,
+  );
   return res.data;
+};
+
+export const deleteStaffApi = async (id: string) => {
+  await axiosInstance.delete(`${getStaffBasePath()}/staff/${id}`);
 };

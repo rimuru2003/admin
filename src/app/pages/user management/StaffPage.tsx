@@ -5,9 +5,14 @@ import { useEffect } from "react"
 import {
   fetchStaff,
   saveStaff,
+  deleteStaff,
   openStaffModal,
   closeStaffModal,
-} from "../../services/features/staff/staff.slice"
+  openDeleteStaffModal,
+  closeDeleteStaffModal,
+} from "../../services/features/staff/staff.slice";
+
+import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import { staffConfig } from "../../services/features/staff/staff.config"
 import type { RootState, AppDispatch } from "../../services/store/index"
 
@@ -25,8 +30,16 @@ const StaffList = () => {
   const { isSuperAdmin } = useRoleAccess()
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ['super_admin'] : ['admin'])
 
-  const { data, total, error, isModalOpen, editingStaff, saving } =
-    useSelector((s: RootState) => s.staff)
+  const {
+    data,
+    total,
+    error,
+    isModalOpen,
+    editingStaff,
+    deleteModalOpen,
+    deletingStaff,
+    saving,
+  } = useSelector((s: RootState) => s.staff)
 
   const { params, handleParamsChange } = useEntityTable(
     (p) => dispatch(fetchStaff(p))
@@ -67,10 +80,10 @@ const StaffList = () => {
           enableRowClick
           getRowLink={(row) => `${portalBase}/staff/${row.id}`}
           storageKey="staffColumns"
-          addAction={{
+          headerActions={[{
             label: "Add Staff",
             onClick: () => dispatch(openStaffModal(null)),
-          }}
+          }]}
           rowActions={[
             {
               label: "Edit",
@@ -78,7 +91,9 @@ const StaffList = () => {
             },
             {
               label: "Delete",
-              onClick: (row) => dispatch(openStaffModal(row)),
+              className: "text-danger",
+              onClick: (row) =>
+                dispatch(openDeleteStaffModal(row)),
             },
           ]}
         />
@@ -91,6 +106,20 @@ const StaffList = () => {
           onClose={() => dispatch(closeStaffModal())}
           onSubmit={(values) =>
             dispatch(saveStaff({ id: editingStaff?.id, values }))
+          }
+        />
+      )}
+
+
+      {deleteModalOpen && deletingStaff && (
+        <DeleteConfirmModal
+          title="Delete Staff"
+          message={`Are you sure you want to delete ${deletingStaff.name}?`}
+          onClose={() =>
+            dispatch(closeDeleteStaffModal())
+          }
+          onConfirm={() =>
+            dispatch(deleteStaff(deletingStaff.id))
           }
         />
       )}

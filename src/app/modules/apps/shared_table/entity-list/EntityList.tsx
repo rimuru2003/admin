@@ -8,6 +8,7 @@ import { exportToExcel } from "../utils/exportToExcel";
 import type { ReactNode } from "react";
 import type { RowAction } from "./table/EntityTable";
 import type { AddAction } from "./components/header/EntityHeader";
+import ExportModal from "../utils/ExportModal";
 
 export type { RowAction, AddAction };
 
@@ -38,8 +39,9 @@ type Props<T extends { id: number | string }> = {
   enableRowClick?: boolean;
   getRowLink?: (row: T) => string;
   storageKey?: string;
-  addAction?: AddAction | null;
+  headerActions?: AddAction[];
   rowActions?: RowAction<T>[];
+  onExportAll?: () => Promise<T[]>;
 };
 
 const EntityList = <T extends { id: number | string }>({
@@ -52,12 +54,14 @@ const EntityList = <T extends { id: number | string }>({
   enableRowClick,
   getRowLink,
   storageKey = "visibleColumns",
-  addAction,
+  headerActions,
   rowActions,
+  onExportAll,
 }: Props<T>) => {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
     columns.map((c) => c.accessor as string),
   );
+  const [isExportOpen, setIsExportOpen] = useState(false);
 
   const [isMobile, setIsMobile] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -88,16 +92,25 @@ const EntityList = <T extends { id: number | string }>({
   const toggleAll = (checked: boolean) =>
     setSelectedRows(checked ? new Set(data.map((r) => r.id)) : new Set());
 
-  const handleExport = () => {
-    const rows =
-      selectedRows.size > 0 ? data.filter((r) => selectedRows.has(r.id)) : data;
-    exportToExcel(rows, columns);
-  };
+  const exportAll = async () => {
+    if (!onExportAll) return;
 
+    const allRows = await onExportAll();
+
+    exportToExcel(allRows, columns);
+  };
   const filteredColumns = columns.filter(
     (col) => col.alwaysVisible || visibleColumns.includes(col.accessor),
   );
+  const exportSelected = () => {
+    const rows = data.filter((r) => selectedRows.has(r.id));
 
+    exportToExcel(rows, columns);
+  };
+
+  const exportCurrentPage = () => {
+    exportToExcel(data, columns);
+  };
   return (
     <div className="d-flex gap-5">
       <div className="flex-grow-1" style={{ minWidth: 0 }}>
@@ -112,7 +125,7 @@ const EntityList = <T extends { id: number | string }>({
             setVisibleColumns={setVisibleColumns}
             isMobile={isMobile}
             onOpenFilter={() => setShowFilter(true)}
-            onExport={handleExport}
+            onExport={() => setIsExportOpen(true)}
             selectedCount={selectedRows.size}
             onSortChange={(config) =>
               onParamsChange({
@@ -122,7 +135,7 @@ const EntityList = <T extends { id: number | string }>({
                 page: 1,
               })
             }
-            addAction={addAction}
+            headerActions={headerActions}
           />
 
           <EntityTable
@@ -190,6 +203,16 @@ const EntityList = <T extends { id: number | string }>({
             />
           </div>
         </div>
+      )}
+
+      {isExportOpen && (
+        <ExportModal
+          selectedCount={selectedRows.size}
+          onClose={() => setIsExportOpen(false)}
+          onExportSelected={exportSelected}
+          onExportCurrent={exportCurrentPage}
+          onExportAll={exportAll}
+        />
       )}
     </div>
   );
