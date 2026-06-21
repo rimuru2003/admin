@@ -18,16 +18,25 @@ const ServiceModal = ({
 }: Props) => {
     const [form, setForm] = useState<ServiceFormValues>({
         name: initialValues?.name ?? "",
-        slug: initialValues?.slug ?? "",
+        slug: initialValues?.slug ?? initialValues?.category ?? "",
         description: initialValues?.description ?? "",
-        category: initialValues?.category ?? "electrical",
+        category: initialValues?.category ?? (initialValues?.slug as ServiceCategory) ?? "electrical",
+        service_area: "",
+        rate_from: "",
+        rate_to: "",
+        is_active: initialValues?.is_active ?? true,
     });
 
     return (
         <ModalShell
             title={initialValues ? "Edit Service" : "Add Service"}
             onClose={onClose}
-            onSubmit={() => onSubmit(form)}
+            onSubmit={() =>
+                onSubmit({
+                    ...form,
+                    slug: form.slug?.trim() || form.category,
+                })
+            }
             isSubmitting={isSubmitting}
             submitLabel={initialValues ? "Update Service" : "Create Service"}
             isValid={!!form.name}
@@ -103,6 +112,69 @@ const ServiceModal = ({
                         }))
                     }
                 />
+            </div>
+
+            <div className="fv-row mt-6">
+                <label className="form-label">Service Area</label>
+
+                <input
+                    className="form-control form-control-solid"
+                    value={form.service_area ?? ""}
+                    onChange={(e) =>
+                        setForm((prev) => ({
+                            ...prev,
+                            service_area: e.target.value,
+                        }))
+                    }
+                />
+            </div>
+
+            <div className="row mt-6">
+                <div className="col-md-6 fv-row">
+                    <label className="form-label">Rate From</label>
+                    <input
+                        type="number"
+                        className="form-control form-control-solid"
+                        value={form.rate_from ?? ""}
+                        onChange={(e) =>
+                            setForm((prev) => ({
+                                ...prev,
+                                rate_from: e.target.value,
+                            }))
+                        }
+                    />
+                </div>
+                <div className="col-md-6 fv-row">
+                    <label className="form-label">Rate To</label>
+                    <input
+                        type="number"
+                        className="form-control form-control-solid"
+                        value={form.rate_to ?? ""}
+                        onChange={(e) =>
+                            setForm((prev) => ({
+                                ...prev,
+                                rate_to: e.target.value,
+                            }))
+                        }
+                    />
+                </div>
+            </div>
+
+            <div className="fv-row mt-6">
+                <label className="form-check form-switch form-check-custom form-check-solid">
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        checked={Boolean(form.is_active)}
+                        onChange={(e) =>
+                            setForm((prev) => ({
+                                ...prev,
+                                is_active: e.target.checked,
+                            }))
+                        }
+                    />
+                    <span className="form-check-label ms-3">Active</span>
+                </label>
             </div>
         </ModalShell>
     );

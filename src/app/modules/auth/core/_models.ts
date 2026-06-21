@@ -4,6 +4,9 @@ export interface AuthModel {
   token_type?: string;
   abilities?: string[];
   permissions?: string[];
+  enabled_modules?: string[];
+  business_type?: string | null;
+  business_verification_status?: string | null;
 }
 
 export interface AuthResponse {
@@ -69,6 +72,8 @@ export interface UserModel {
   phone?: string;
   roles?: string[];
   permissions?: string[];
+  business_type?: string | null;
+  business_verification_status?: string | null;
   pic?: string;
   language?: "en" | "de" | "es" | "fr" | "ja" | "zh" | "ru";
   timeZone?: string;

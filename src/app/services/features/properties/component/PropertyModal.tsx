@@ -20,6 +20,9 @@ const PropertyModal = ({
         description: initialValues?.description ?? "",
         status: initialValues?.status ?? "Draft",
         address: initialValues?.address ?? "",
+        full_address: initialValues?.full_address ?? initialValues?.address ?? "",
+        latitude: initialValues?.latitude ?? "",
+        longitude: initialValues?.longitude ?? "",
         suburb: initialValues?.suburb ?? "",
         postcode: initialValues?.postcode ?? "",
         images: [],
@@ -137,6 +140,22 @@ const PropertyModal = ({
                 />
             </div>
 
+            <div className="fv-row mb-7">
+                <label className="form-label">Full Address</label>
+
+                <textarea
+                    rows={3}
+                    className="form-control form-control-solid"
+                    value={form.full_address ?? ""}
+                    onChange={(e) =>
+                        setForm((prev) => ({
+                            ...prev,
+                            full_address: e.target.value,
+                        }))
+                    }
+                />
+            </div>
+
             <div className="row">
                 <div className="col-md-6">
                     <div className="fv-row mb-7">
@@ -166,6 +185,46 @@ const PropertyModal = ({
                                 setForm((prev) => ({
                                     ...prev,
                                     postcode: e.target.value,
+                                }))
+                            }
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-md-6">
+                    <div className="fv-row mb-7">
+                        <label className="form-label">Latitude</label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            className="form-control form-control-solid"
+                            value={form.latitude ?? ""}
+                            onChange={(e) =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    latitude: e.target.value,
+                                }))
+                            }
+                        />
+                    </div>
+                </div>
+
+                <div className="col-md-6">
+                    <div className="fv-row mb-7">
+                        <label className="form-label">Longitude</label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            className="form-control form-control-solid"
+                            value={form.longitude ?? ""}
+                            onChange={(e) =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    longitude: e.target.value,
                                 }))
                             }
                         />

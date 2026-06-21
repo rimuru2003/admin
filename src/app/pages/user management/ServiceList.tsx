@@ -18,16 +18,13 @@ import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityT
 import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
-import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
+import { useRoleAccess } from "../../modules/auth";
 
 const ServiceListPage = () => {
-    const dispatch = useDispatch<AppDispatch>();
-    const { isSuperAdmin } = useRoleAccess();
-    const canManage = !isSuperAdmin;
-    const portalBase = getRolePortalBaseRoute(
-        isSuperAdmin ? ["super_admin"] : ["admin"],
-    );
-    const {
+  const dispatch = useDispatch<AppDispatch>();
+  const { isSuperAdmin } = useRoleAccess();
+  const canManage = !isSuperAdmin;
+  const {
         data,
         total,
         error,
@@ -78,8 +75,7 @@ const ServiceListPage = () => {
                     onParamsChange={handleParamsChange}
                     columns={serviceListConfig.columns}
                     filtersConfig={serviceListConfig.filters}
-                    getRowLink={(row) => `${portalBase}/services-management/${row.id}`}
-                    enableRowClick headerActions={
+                    headerActions={
                         !isSuperAdmin
                             ? [
                                 {
