@@ -2,6 +2,7 @@ import { useIntl } from "react-intl";
 import {
   usePermissionAccess,
   useRoleAccess,
+  useModuleAccess,
 } from "../../../../../app/modules/auth";
 import { SidebarMenuItemWithSub } from "./SidebarMenuItemWithSub";
 import { SidebarMenuItem } from "./SidebarMenuItem";
@@ -11,6 +12,7 @@ const SidebarMenuMain = () => {
   const intl = useIntl();
   const { isSuperAdmin, isAdmin } = useRoleAccess();
   const { hasPermission } = usePermissionAccess();
+  const { hasModule } = useModuleAccess();
   const portalBase = getRolePortalBaseRoute(
     isSuperAdmin ? ["super_admin"] : isAdmin ? ["admin"] : [],
   );
@@ -124,7 +126,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasPermission("property.view") && (
+          {hasModule("property_management") && (
             <SidebarMenuItem
               to={`${portalBase}/property-management`}
               title="Property Management - At a Glance"
@@ -133,7 +135,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasPermission("service.view") && (
+          {hasModule("service_management") && (
             <SidebarMenuItem
               to={`${portalBase}/services`}
               title="Services Management"
@@ -157,7 +159,7 @@ const SidebarMenuMain = () => {
 
       {isAdmin && (
         <>
-          {hasPermission("property.view") && (
+          {hasModule("property_management") && (
             <SidebarMenuItem
               to={`${portalBase}/property-management`}
               title="Property Management"
@@ -166,9 +168,9 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasPermission("service.view") && (
+          {hasModule("service_management") && (
             <SidebarMenuItem
-              to={`${portalBase}/services-management`}
+              to={`${portalBase}/services`}
               title="Services Management"
               fontIcon="bi-archive"
               icon="element-plus"
@@ -184,14 +186,14 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {/* {hasPermission("inquiry.view") && ( */}
+          {hasModule("inquiry_management") && (
             <SidebarMenuItem
               to={`${portalBase}/inquiry`}
               title="Inquirys Management"
               fontIcon="bi-archive"
               icon="element-plus"
             />
-          {/* )} */}
+          )}
         </>
       )}
 

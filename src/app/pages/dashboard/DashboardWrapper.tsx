@@ -1,5 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
+import { Link } from "react-router-dom";
 import { toAbsoluteUrl } from "../../../_metronic/helpers";
 import { PageTitle } from "../../../_metronic/layout/core";
 import {
@@ -17,7 +18,7 @@ import {
 } from "../../../_metronic/partials/widgets";
 import { ToolbarWrapper } from "../../../_metronic/layout/components/toolbar";
 import { Content } from "../../../_metronic/layout/components/content";
-import { useRoleAccess } from "../../modules/auth";
+import { useModuleAccess, useRoleAccess } from "../../modules/auth";
 import { fetchDashboardSummary, type DashboardSummary } from "../../services/features/dashboard/dashboard.api";
 
 const MetricCard = ({
@@ -41,6 +42,7 @@ const MetricCard = ({
 
 const DashboardPage: FC = () => {
   const { isSuperAdmin } = useRoleAccess();
+  const { hasModule } = useModuleAccess();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -140,6 +142,44 @@ const DashboardPage: FC = () => {
               </>
             )}
           </>
+        )}
+
+        {!isSuperAdmin && (
+          <div className="row g-5 mb-6">
+            {hasModule("property_management") && (
+              <div className="col-md-4">
+                <Link to="/admin/property-management" className="card h-100 shadow-sm border-0 text-decoration-none">
+                  <div className="card-body">
+                    <div className="text-muted fs-7">Module</div>
+                    <div className="fw-bold fs-3 text-dark">Property Management</div>
+                    <div className="text-gray-600 mt-2">View listings, map locations, and keep property records current.</div>
+                  </div>
+                </Link>
+              </div>
+            )}
+
+            {hasModule("service_management") && (
+              <div className="col-md-4">
+                <Link to="/admin/services" className="card h-100 shadow-sm border-0 text-decoration-none">
+                  <div className="card-body">
+                    <div className="text-muted fs-7">Module</div>
+                    <div className="fw-bold fs-3 text-dark">Service Management</div>
+                    <div className="text-gray-600 mt-2">Create and maintain the services your business offers.</div>
+                  </div>
+                </Link>
+              </div>
+            )}
+
+            <div className="col-md-4">
+              <Link to="/admin/inquiry" className="card h-100 shadow-sm border-0 text-decoration-none">
+                <div className="card-body">
+                  <div className="text-muted fs-7">Module</div>
+                  <div className="fw-bold fs-3 text-dark">Inquiry Management</div>
+                  <div className="text-gray-600 mt-2">Work incoming inquiries captured from the website.</div>
+                </div>
+              </Link>
+            </div>
+          </div>
         )}
 
         <div className="d-flex flex-wrap align-items-stretch gap-8 ">

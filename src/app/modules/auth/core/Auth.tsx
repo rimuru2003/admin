@@ -2,7 +2,7 @@
 import { type FC, useEffect } from 'react'
 import { type TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { WithChildren } from '../../../../_metronic/helpers'
-import { clearSession, setAuth as setAuthState, setBootstrapping, setCurrentUser, setPermissions } from './auth.store'
+import { clearSession, setAuth as setAuthState, setBootstrapping, setCurrentUser, setPermissions, setEnabledModules, setBusinessProfile } from './auth.store'
 import { getAuth, removeAuth, setAuth as persistAuth } from './AuthHelpers'
 import { getPermissionsByToken, getUserByToken, login as loginRequest, logout as logoutRequest, register as registerRequest } from './_requests'
 import type { AuthModel, AuthResponse, UserModel } from './_models'
@@ -13,6 +13,9 @@ type AuthContextProps = {
   auth: AuthModel | undefined
   currentUser: UserModel | undefined
   permissions: string[]
+  enabledModules: string[]
+  businessType: string | null
+  businessVerificationStatus: string | null
   isBootstrapping: boolean
   saveAuth: (auth: AuthModel | undefined) => void
   setCurrentUser: (user: UserModel | undefined) => void
@@ -22,6 +25,15 @@ type AuthContextProps = {
     first: string
     last: string
     email: string
+    business_name: string
+    trading_name?: string
+    business_type: 'organisation' | 'company' | 'solo_trader'
+    abn_number: string
+    contact_email?: string
+    contact_phone?: string
+    address?: string
+    state?: string
+    postcode?: string
     password: string
     password_confirmation: string
   }) => Promise<string>
@@ -35,7 +47,7 @@ const mapAuthResponse = (response: AuthResponse): AuthModel => ({
   abilities: response.abilities,
 })
 
-const bootstrapSession = async (dispatch: AppDispatch): Promise<void> => {
+  const bootstrapSession = async (dispatch: AppDispatch): Promise<void> => {
   dispatch(setBootstrapping(true))
 
   const storedAuth = getAuth()
@@ -53,6 +65,14 @@ const bootstrapSession = async (dispatch: AppDispatch): Promise<void> => {
     dispatch(setAuthState(storedAuth))
     dispatch(setCurrentUser(data.data.user))
     dispatch(setPermissions(permissions.data.effective_permission_names ?? []))
+    dispatch(setEnabledModules(permissions.data.enabled_modules ?? []))
+    dispatch(
+      setBusinessProfile({
+        businessType: permissions.data.user?.business_type ?? null,
+        businessVerificationStatus:
+          permissions.data.user?.business_verification_status ?? null,
+      }),
+    )
   } catch (error) {
     console.error('Failed to restore admin session.', error)
     removeAuth()
@@ -115,6 +135,14 @@ const useAuth = (): AuthContextProps => {
     updateCurrentUser(data.data.user)
     const permissions = await getPermissionsByToken()
     dispatch(setPermissions(permissions.data.effective_permission_names ?? []))
+    dispatch(setEnabledModules(permissions.data.enabled_modules ?? []))
+    dispatch(
+      setBusinessProfile({
+        businessType: permissions.data.user?.business_type ?? null,
+        businessVerificationStatus:
+          permissions.data.user?.business_verification_status ?? null,
+      }),
+    )
 
     return homeRoute
   }
@@ -123,6 +151,15 @@ const useAuth = (): AuthContextProps => {
     first: string
     last: string
     email: string
+    business_name: string
+    trading_name?: string
+    business_type: 'organisation' | 'company' | 'solo_trader'
+    abn_number: string
+    contact_email?: string
+    contact_phone?: string
+    address?: string
+    state?: string
+    postcode?: string
     password: string
     password_confirmation: string
   }) => {
@@ -132,6 +169,15 @@ const useAuth = (): AuthContextProps => {
       // Add `name` so backend receives both formats
       name: `${payload.first.trim()} ${payload.last.trim()}`,
       email: payload.email.trim(),
+      business_name: payload.business_name.trim(),
+      trading_name: payload.trading_name?.trim(),
+      business_type: payload.business_type,
+      abn_number: payload.abn_number.trim(),
+      contact_email: payload.contact_email?.trim() ?? payload.email.trim(),
+      contact_phone: payload.contact_phone?.trim(),
+      address: payload.address?.trim(),
+      state: payload.state?.trim(),
+      postcode: payload.postcode?.trim(),
       password: payload.password,
       password_confirmation: payload.password_confirmation,
     }
@@ -144,6 +190,14 @@ const useAuth = (): AuthContextProps => {
     updateCurrentUser(data.data.user)
     const permissions = await getPermissionsByToken()
     dispatch(setPermissions(permissions.data.effective_permission_names ?? []))
+    dispatch(setEnabledModules(permissions.data.enabled_modules ?? []))
+    dispatch(
+      setBusinessProfile({
+        businessType: permissions.data.user?.business_type ?? null,
+        businessVerificationStatus:
+          permissions.data.user?.business_verification_status ?? null,
+      }),
+    )
 
     return homeRoute
   }
@@ -152,6 +206,9 @@ const useAuth = (): AuthContextProps => {
     auth: authState.auth,
     currentUser: authState.currentUser,
     permissions: authState.permissions,
+    enabledModules: authState.enabledModules,
+    businessType: authState.businessType,
+    businessVerificationStatus: authState.businessVerificationStatus,
     isBootstrapping: authState.isBootstrapping,
     saveAuth,
     setCurrentUser: updateCurrentUser,

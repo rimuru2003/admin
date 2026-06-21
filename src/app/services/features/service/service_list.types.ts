@@ -13,9 +13,19 @@ export type Service = {
 
   slug?: string | null;
 
+  title?: string | null;
+
   description?: string | null;
 
   category?: ServiceCategory;
+
+  service_area?: string | null;
+
+  rate_from?: number | null;
+
+  rate_to?: number | null;
+
+  is_active?: boolean;
 
   image?: string | null;
 
@@ -31,9 +41,19 @@ export type ServiceList = {
 
   slug?: string | null;
 
+  title?: string | null;
+
   description?: string | null;
 
   category?: ServiceCategory;
+
+  service_area?: string | null;
+
+  rate_from?: number | null;
+
+  rate_to?: number | null;
+
+  is_active?: boolean;
 
   image?: string | null;
 
@@ -43,9 +63,9 @@ export type ServiceList = {
     slug: string;
   } | null;
 
-  services_count?: number;
-
   organization_count?: number;
+
+  service_group_count?: number;
 
   created_at?: string | null;
 
@@ -60,6 +80,14 @@ export type ServiceFormValues = {
   description?: string;
 
   category: ServiceCategory;
+
+  service_area?: string;
+
+  rate_from?: string | number;
+
+  rate_to?: string | number;
+
+  is_active?: boolean;
 
   image?: File | string | null;
 };

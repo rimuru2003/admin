@@ -17,6 +17,9 @@ export type Property = {
   status: "Draft" | "Published" | "Archived";
 
   address?: string | null;
+  full_address?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   suburb?: string | null;
   postcode?: string | null;
 
@@ -49,6 +52,9 @@ export type PropertyFormValues = {
   status: "Draft" | "Published" | "Archived";
 
   address?: string;
+  full_address?: string;
+  latitude?: string | number;
+  longitude?: string | number;
   suburb?: string;
   postcode?: string;
 
@@ -67,6 +73,10 @@ export type PropertyList = {
 
   rating?: number;
 
+  address?: string | null;
+  full_address?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   suburb?: string | null;
 
   postcode?: string | null;
