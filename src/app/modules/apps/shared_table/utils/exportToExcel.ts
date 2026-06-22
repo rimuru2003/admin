@@ -1,5 +1,4 @@
 import { saveAs } from "file-saver";
-import * as ExcelJS from "exceljs";
 
 type ExportColumn = {
   accessor: string;
@@ -12,24 +11,22 @@ export const exportToExcel = async (
 ): Promise<void> => {
   if (!data.length) return;
 
-  // 1. Create a new workbook and worksheet
+  // Lazy-load exceljs only when export is actually triggered
+  const ExcelJS = await import("exceljs");
+
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("Data");
 
-  // 2. Define columns
   worksheet.columns = columns.map((col) => ({
     header: col.Header,
     key: col.accessor,
-    width: 20, // Set a default width
+    width: 20,
   }));
 
-  // 3. Add rows
   worksheet.addRows(data);
 
-  // 4. Style the header row
   worksheet.getRow(1).font = { bold: true };
 
-  // 5. Generate buffer and save
   const buffer = await workbook.xlsx.writeBuffer();
   const blob = new Blob([buffer], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

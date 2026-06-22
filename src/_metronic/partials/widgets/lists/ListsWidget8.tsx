@@ -11,31 +11,31 @@ const products = [
     name: 'Cup & Green',
     description: 'Visually stunning',
     rating: '4.2',
-    image: 'media/stock/600x400/img-17.jpg',
+    image: 'media/avatars/300-1.jpg',
   },
   {
     name: 'Pink Patterns',
     description: 'Feminine all around',
     rating: '5.0',
-    image: 'media/stock/600x400/img-10.jpg',
+    image: 'media/avatars/300-2.jpg',
   },
   {
     name: 'Abstract Art',
     description: 'The will to capture readers',
     rating: '5.7',
-    image: 'media/stock/600x400/img-1.jpg',
+    image: 'media/avatars/300-3.jpg',
   },
   {
     name: 'Desserts platter',
     description: 'Food trends & inspirations',
     rating: '3.7',
-    image: 'media/stock/600x400/img-9.jpg',
+    image: 'media/avatars/300-4.jpg',
   },
   {
     name: 'Pink Patterns',
     description: 'Feminine all around',
     rating: '5.0',
-    image: 'media/stock/600x400/img-10.jpg',
+    image: 'media/avatars/300-2.jpg',
   },
 ]
 
