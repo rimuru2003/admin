@@ -4,7 +4,7 @@ import TopBarProgress from "react-topbar-progress-indicator";
 import { getCSSVariableValue } from "../../_metronic/assets/ts/_utils";
 import { WithChildren } from "../../_metronic/helpers";
 import { MasterLayout } from "../../_metronic/layout/MasterLayout";
-import { PermissionGuard, RoleGuard, useAuth } from "../modules/auth";
+import { ModuleGuard, PermissionGuard, RoleGuard, useAuth } from "../modules/auth";
 import { getRoleHomeRoute } from "../modules/auth/core/roleRoutes";
 import { DashboardWrapper } from "../pages/dashboard/DashboardWrapper";
 import { ComingSoonPage } from "../pages/ComingSoonPage";
@@ -14,17 +14,10 @@ const SeekerPage = lazy(() => import("../pages/user management/SeekerPgae"));
 const SoloPage = lazy(() => import("../pages/user management/user/SoloPage"));
 const UserPage = lazy(() => import("../pages/user management/UserPage"));
 const Subscription = lazy(() => import("../pages/Subscription/Subscription"));
-const EmailTemplatePage = lazy(
-  () => import("../pages/email/EmailTemplatePage"),
-);
-const PropertyListPage = lazy(
-  () => import("../pages/user management/PropertyList"),
-);
-const ServiceListPage = lazy(
-  () => import("../pages/user management/ServiceList"),
-);
+const EmailTemplatePage = lazy(() => import("../pages/email/EmailTemplatePage"));
+const PropertyListPage = lazy(() => import("../pages/user management/PropertyList"));
+const ServiceListPage = lazy(() => import("../pages/user management/ServiceList"));
 const InquiryPage = lazy(() => import("../pages/platform/InquiryPage"));
-
 const PermissionsPage = lazy(() => import("../pages/platform/PermissionsPage"));
 const SettingsPage = lazy(() => import("../pages/platform/SettingsPage"));
 const OrderPage = lazy(() => import("../pages/platform/OrderPage"));
@@ -112,9 +105,11 @@ const PrivateRoutes = () => {
           path="/admin/users/*"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
-              <SuspensedView>
-                <StaffPage />
-              </SuspensedView>
+              <ModuleGuard anyOf={["user_management"]}>
+                <SuspensedView>
+                  <StaffPage />
+                </SuspensedView>
+              </ModuleGuard>
             </RoleGuard>
           }
         />
@@ -270,9 +265,11 @@ const PrivateRoutes = () => {
           path="/admin/services/*"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
-              <SuspensedView>
-                <ServiceListPage />
-              </SuspensedView>
+              <ModuleGuard anyOf={["service_management"]}>
+                <SuspensedView>
+                  <ServiceListPage />
+                </SuspensedView>
+              </ModuleGuard>
             </RoleGuard>
           }
         />
@@ -281,9 +278,11 @@ const PrivateRoutes = () => {
           path="/admin/inquiry/*"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
-              <SuspensedView>
-                <InquiryPage />
-              </SuspensedView>
+              <ModuleGuard anyOf={["inquiry_management"]}>
+                <SuspensedView>
+                  <InquiryPage />
+                </SuspensedView>
+              </ModuleGuard>
             </RoleGuard>
           }
         />
@@ -292,9 +291,11 @@ const PrivateRoutes = () => {
           path="/admin/property-management/*"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
-              <SuspensedView>
-                <PropertyListPage />
-              </SuspensedView>
+              <ModuleGuard anyOf={["property_management"]}>
+                <SuspensedView>
+                  <PropertyListPage />
+                </SuspensedView>
+              </ModuleGuard>
             </RoleGuard>
           }
         />

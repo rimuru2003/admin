@@ -4,9 +4,12 @@ export type Organization = {
   slug?: string;
   abn?: string;
   acn?: string;
+  business_type?: string;
+  business_verification_status?: string;
   avg_org_rating?: string;
   brand_primary_color?: string;
   brand_secondary_color?: string;
+  address?: string;
   contact_email?: string;
   contact_phone?: string;
   created_at?: string;
@@ -16,6 +19,8 @@ export type Organization = {
   plan_id?: string | null;
   ranking_priority?: number;
   stripe_customer_id?: string | null;
+  state?: string;
+  postcode?: string;
   type?: {
     id: string;
     name: string;

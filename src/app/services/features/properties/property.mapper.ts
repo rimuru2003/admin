@@ -10,6 +10,9 @@ type PropertyApi = {
   description?: string | null;
 
   address?: string | null;
+  full_address?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   suburb?: string | null;
   postcode?: string | null;
 
@@ -51,6 +54,10 @@ export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
 
   rating: item.rating ?? undefined,
 
+  address: item.address ?? null,
+  full_address: item.full_address ?? null,
+  latitude: item.latitude ?? null,
+  longitude: item.longitude ?? null,
   suburb: item.suburb ?? null,
   postcode: item.postcode ?? null,
 
@@ -71,6 +78,9 @@ export const mapProperty = (item: PropertyApi): Property => ({
   description: item.description ?? null,
 
   address: item.address ?? null,
+  full_address: item.full_address ?? null,
+  latitude: item.latitude ?? null,
+  longitude: item.longitude ?? null,
   suburb: item.suburb ?? null,
   postcode: item.postcode ?? null,
 

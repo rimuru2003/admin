@@ -27,6 +27,22 @@ export const organizationConfig = {
       Cell: ({ value }) => (value as Organization["type"])?.name ?? "—",
     },
     {
+      Header: "Business Type",
+      accessor: "business_type",
+      Cell: ({ value }) => value ? String(value) : "—",
+    },
+    {
+      Header: "Verification",
+      accessor: "business_verification_status",
+      Cell: ({ value }) => value ? String(value) : "pending",
+    },
+    {
+      Header: "ABN",
+      accessor: "abn",
+      sortable: true,
+      Cell: ({ value }) => (value ? String(value) : "—"),
+    },
+    {
       Header: "Email",
       accessor: "contact_email",
       sortable: true,
@@ -46,6 +62,18 @@ export const organizationConfig = {
   ] satisfies Column<Organization>[],
 
   filters: [
+    {
+      key: "business_type",
+      label: "Business Type",
+      type: "select",
+      options: ["organisation", "company", "solo_trader"],
+    },
+    {
+      key: "business_verification_status",
+      label: "Verification Status",
+      type: "select",
+      options: ["pending", "verified", "rejected"],
+    },
     {
       key: "status",
       label: "Status",

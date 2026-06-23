@@ -25,9 +25,19 @@ export const serviceListConfig = {
       Cell: ({ value }: { value: any }) => value || "—",
     },
     {
+      Header: "Title",
+      accessor: "title",
+      Cell: ({ value }: { value: any }) => value || "—",
+    },
+    {
       Header: "Description",
       accessor: "description",
       Cell: ({ value }: { value: any }) => value || "—",
+    },
+    {
+      Header: "Status",
+      accessor: "is_active",
+      Cell: ({ value }: { value: any }) => (value ? "Active" : "Inactive"),
     },
     {
       Header: "Organization Type",
@@ -35,14 +45,29 @@ export const serviceListConfig = {
       Cell: ({ value }: { value: any }) => value?.name ?? "—",
     },
     {
-      Header: "Services Count",
-      accessor: "services_count",
+      Header: "Service Area",
+      accessor: "service_area",
+      Cell: ({ value }: { value: any }) => value || "—",
+    },
+    {
+      Header: "Rate From",
+      accessor: "rate_from",
+      Cell: ({ value }: { value: any }) => (value ?? "—"),
+    },
+    {
+      Header: "Rate To",
+      accessor: "rate_to",
+      Cell: ({ value }: { value: any }) => (value ?? "—"),
+    },
+    {
+      Header: "Organizations Count",
+      accessor: "organization_count",
       sortable: true,
       Cell: ({ value }: { value: any }) => value ?? 0,
     },
     {
-      Header: "Organization Count",
-      accessor: "organization_count",
+      Header: "Service Groups Count",
+      accessor: "service_group_count",
       sortable: true,
       Cell: ({ value }: { value: any }) => value ?? 0,
     },
