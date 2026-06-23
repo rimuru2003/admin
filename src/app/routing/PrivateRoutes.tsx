@@ -6,8 +6,8 @@ import { WithChildren } from "../../_metronic/helpers";
 import { MasterLayout } from "../../_metronic/layout/MasterLayout";
 import { ModuleGuard, PermissionGuard, RoleGuard, useAuth } from "../modules/auth";
 import { getRoleHomeRoute } from "../modules/auth/core/roleRoutes";
-import { DashboardWrapper } from "../pages/dashboard/DashboardWrapper";
 import { ComingSoonPage } from "../pages/ComingSoonPage";
+const DashboardWrapper = lazy(() => import("../pages/dashboard/DashboardWrapper").then(m => ({ default: m.DashboardWrapper })));
 
 const StaffPage = lazy(() => import("../pages/user management/StaffPage"));
 const SeekerPage = lazy(() => import("../pages/user management/SeekerPgae"));
@@ -49,7 +49,9 @@ const PrivateRoutes = () => {
           path="/super-admin/dashboard"
           element={
             <RoleGuard allow={["super_admin"]}>
-              <DashboardWrapper />
+              <SuspensedView>
+                <DashboardWrapper />
+              </SuspensedView>
             </RoleGuard>
           }
         />
@@ -63,7 +65,9 @@ const PrivateRoutes = () => {
           path="/admin/dashboard"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
-              <DashboardWrapper />
+              <SuspensedView>
+                <DashboardWrapper />
+              </SuspensedView>
             </RoleGuard>
           }
         />
