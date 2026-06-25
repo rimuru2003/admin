@@ -19,15 +19,18 @@ import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityLi
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
 
-import { useRoleAccess } from "../../modules/auth";
+import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
 
+import { useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 import PropertyModal from "../../services/features/properties/component/PropertyModal";
 import PropertyMapView from "../../services/features/properties/component/PropertyMapView";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import { useToast } from "../../services/ui/toast/useToast";
 import type { PropertyList } from "../../services/features/properties/property.types";
 
-const PropertyListPage = () => {
+const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
   const toast = useToast();
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
@@ -44,18 +47,13 @@ const PropertyListPage = () => {
   });
 
   const { isSuperAdmin } = useRoleAccess();
+  const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
   const {
     data,
     total,
     error,
     loading,
-
     isModalOpen,
-    editingProperty,
-
-    deleteModalOpen,
-    deletingProperty,
-
     saving,
   } = useSelector((s: RootState) => s.propertyList);
 
@@ -153,39 +151,38 @@ const PropertyListPage = () => {
     );
 
   return (
-    <>
-      <Content>
-        <PageHeader
-          title={
-            isSuperAdmin
-              ? "Property Management - At a Glance"
-              : "Property Management"
-          }
-          subtitle={
-            isSuperAdmin
-              ? "All properties across companies"
-              : "Manage properties for your company"
-          }
-        />
+    <Content>
+      <PageHeader
+        title={
+          isSuperAdmin
+            ? "Property Management - At a Glance"
+            : "Property Management"
+        }
+        subtitle={
+          isSuperAdmin
+            ? "All properties across companies"
+            : "Manage properties for your company"
+        }
+      />
 
-        <div className="d-flex justify-content-end mb-5">
-          <div className="btn-group">
-            <button
-              type="button"
-              className={`btn btn-sm ${viewMode === "list" ? "btn-primary" : "btn-light"}`}
-              onClick={() => setViewMode("list")}
-            >
-              List View
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm ${viewMode === "map" ? "btn-primary" : "btn-light"}`}
-              onClick={() => setViewMode("map")}
-            >
-              Map View
-            </button>
-          </div>
+      <div className="d-flex justify-content-end mb-5">
+        <div className="btn-group">
+          <button
+            type="button"
+            className={`btn btn-sm ${viewMode === "list" ? "btn-primary" : "btn-light"}`}
+            onClick={() => setViewMode("list")}
+          >
+            List View
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${viewMode === "map" ? "btn-primary" : "btn-light"}`}
+            onClick={() => setViewMode("map")}
+          >
+            Map View
+          </button>
         </div>
+      </div>
 
         {viewMode === "list" ? (
           <EntityList
@@ -336,4 +333,4 @@ const PropertyListPage = () => {
   );
 };
 
-export default PropertyListPage;
+export default PropertyListPageWrapper;
