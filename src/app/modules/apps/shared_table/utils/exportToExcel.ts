@@ -1,31 +1,36 @@
-import * as XLSX from 'xlsx'
-import { saveAs } from 'file-saver'
+import { saveAs } from "file-saver";
 
-export const exportToExcel = (data: any[], columns: any[]) => {
-  if (!data.length) return
+type ExportColumn = {
+  accessor: string;
+  Header: string;
+};
 
-  const formatted = data.map((row) => {
-    const obj: any = {}
+export const exportToExcel = async (
+  data: Record<string, unknown>[],
+  columns: ExportColumn[],
+): Promise<void> => {
+  if (!data.length) return;
 
-    columns.forEach((col) => {
-      const key = col.accessor
-      obj[col.Header] = row[key] ?? ''
-    })
+  // Lazy-load exceljs only when export is actually triggered
+  const ExcelJS = await import("exceljs");
 
-    return obj
-  })
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Data");
 
-  const ws = XLSX.utils.json_to_sheet(formatted)
-  const wb = XLSX.utils.book_new()
+  worksheet.columns = columns.map((col) => ({
+    header: col.Header,
+    key: col.accessor,
+    width: 20,
+  }));
 
-  XLSX.utils.book_append_sheet(wb, ws, 'Data')
+  worksheet.addRows(data);
 
-  const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
+  worksheet.getRow(1).font = { bold: true };
 
+  const buffer = await workbook.xlsx.writeBuffer();
   const blob = new Blob([buffer], {
-    type:
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
-  })
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
 
-  saveAs(blob, 'table_data.xlsx')
-}
+  saveAs(blob, "table_data.xlsx");
+};

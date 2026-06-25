@@ -73,7 +73,7 @@ const agencies: AgencyOwner[] = [
     activeListings: 70,
     subscriptionPlan: "Enterprise",
     status: "Active",
-    logo: "media/avatars/300-8.jpg",
+    logo: "media/avatars/300-2.jpg",
     createdAt: "2026-03-03",
   }, {
     id: 5,

@@ -24,6 +24,8 @@ const Subscription = () => {
 
     const [deletingPlan, setDeletingPlan] = useState<Plan | null>(null)
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
+    const selectedPlanPropertyLimit =
+        selectedPlan?.features.find((feature) => feature.name === "Properties")?.value ?? "unlimited"
     useEffect(() => {
         dispatch(fetchPlans())
     }, [dispatch])
