@@ -1,5 +1,5 @@
 import React from "react";
-import type { EmailsSectionConfig } from "../core/DetailTypes";
+import type { EmailsSectionConfig } from "../../core/DetailTypes";
 
 type Props = {
   config: EmailsSectionConfig;

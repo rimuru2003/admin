@@ -1,5 +1,5 @@
 import React from "react";
-import type { GallerySectionConfig } from "../core/DetailTypes";
+import type { GallerySectionConfig } from "../../core/DetailTypes";
 
 type Props<T> = {
   config: GallerySectionConfig<T>;
@@ -7,8 +7,8 @@ type Props<T> = {
 };
 
 export default function GalleryWidget<T>({ config, data }: Props<T>) {
-  const images = typeof config.imagesAccessor === "function" 
-    ? config.imagesAccessor(data) 
+  const images: string[] = typeof config.imagesAccessor === "function"
+    ? config.imagesAccessor(data)
     : data[config.imagesAccessor as keyof T] as unknown as string[];
 
   if (!images || images.length === 0) {
@@ -35,10 +35,10 @@ export default function GalleryWidget<T>({ config, data }: Props<T>) {
       </div>
       <div className="card-body pt-5">
         <div className="row g-5">
-          {images.map((imgUrl, idx) => (
+          {images.map((imgUrl: string, idx: number) => (
             <div key={idx} className="col-4 col-md-3 col-xl-2">
               <a className="d-block overlay" data-fslightbox="lightbox-basic" href={imgUrl}>
-                <div 
+                <div
                   className="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-100px"
                   style={{ backgroundImage: `url(${imgUrl})` }}
                 ></div>

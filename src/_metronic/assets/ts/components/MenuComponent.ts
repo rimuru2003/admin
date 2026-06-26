@@ -74,9 +74,10 @@ class MenuComponent {
 
   // Set external trigger element
   private _setTriggerElement = () => {
-    const target = document.querySelector(
-      `[data-kt-menu-target="#${this.element.getAttribute('id')}"`
-    )
+    const elementId = this.element.getAttribute('id')
+    const target = elementId
+      ? document.querySelector(`[data-kt-menu-target="#${elementId}"]`)
+      : null
 
     if (target) {
       this.triggerElement = target as HTMLElement

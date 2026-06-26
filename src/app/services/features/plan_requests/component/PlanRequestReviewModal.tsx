@@ -1,18 +1,13 @@
 import { useState } from "react";
 import { ModalShell } from "../../../../modules/apps/component/ModalShell";
-import type { PlanRequest } from "../plan-request.types";
+import type { PlanRequest, PlanRequestReviewValues } from "../plan-request.types";
 
 type Props = {
   request: PlanRequest;
   action: "approve" | "reject";
   isSubmitting: boolean;
   onClose: () => void;
-  onSubmit: (payload: {
-    admin_notes?: string;
-    create_order?: boolean;
-    plan_id?: string | null;
-    organization_id?: string | null;
-  }) => void;
+  onSubmit: (payload: PlanRequestReviewValues) => void;
 };
 
 export const PlanRequestReviewModal = ({

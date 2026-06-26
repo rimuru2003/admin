@@ -1,5 +1,5 @@
 import React from "react";
-import type { MapSectionConfig } from "../core/DetailTypes";
+import type { MapSectionConfig } from "../../core/DetailTypes";
 
 type Props<T> = {
   config: MapSectionConfig<T>;
