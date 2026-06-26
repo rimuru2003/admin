@@ -13,17 +13,19 @@ export default function SectionRenderer<T>({ config, data }: Props<T>) {
   switch (config.type) {
     case "info":
       return <InfoCard config={config} data={data} />;
-    
+
     case "table":
       return <RelatedTable config={config} />;
-    
+
     case "custom":
       const CustomComponent = config.component;
       return (
         <div className="card shadow-sm h-100">
           <div className="card-header border-0 pt-5">
             <h3 className="card-title align-items-start flex-column">
-              <span className="card-label fw-bold text-gray-900">{config.title}</span>
+              <span className="card-label fw-bold text-gray-900">
+                {config.title}
+              </span>
             </h3>
           </div>
           <div className="card-body pt-5">
@@ -44,23 +46,25 @@ export default function SectionRenderer<T>({ config, data }: Props<T>) {
         <div className="card shadow-sm h-100 border-dashed border-primary">
           <div className="card-header border-0 pt-5">
             <h3 className="card-title align-items-start flex-column">
-              <span className="card-label fw-bold text-gray-900">{config.title}</span>
+              <span className="card-label fw-bold text-gray-900">
+                {config.title}
+              </span>
             </h3>
           </div>
           <div className="card-body pt-5 d-flex align-items-center justify-content-center">
             <div className="text-muted text-center">
-              <div className="fs-6 fw-semibold">[{config.type.toUpperCase()} WIDGET PLACEHOLDER]</div>
-              <div className="fs-7 mt-2">This widget will be fully implemented in Phase 2.</div>
+              <div className="fs-6 fw-semibold">
+                [{config.type.toUpperCase()} WIDGET PLACEHOLDER]
+              </div>
+              <div className="fs-7 mt-2">
+                This widget will be fully implemented in Phase 2.
+              </div>
             </div>
           </div>
         </div>
       );
 
     default:
-      return (
-        <div className="alert alert-warning">
-          Unknown section type
-        </div>
-      );
+      return <div className="alert alert-warning">Unknown section type</div>;
   }
 }
