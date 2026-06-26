@@ -1,14 +1,24 @@
 import { FC, Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import TopBarProgress from "react-topbar-progress-indicator";
+
 import { getCSSVariableValue } from "../../_metronic/assets/ts/_utils";
 import { WithChildren } from "../../_metronic/helpers";
 import { MasterLayout } from "../../_metronic/layout/MasterLayout";
-import { ModuleGuard, PermissionGuard, RoleGuard, useAuth } from "../modules/auth";
+import {
+  ModuleGuard,
+  PermissionGuard,
+  RoleGuard,
+  useAuth,
+} from "../modules/auth";
 import { getRoleHomeRoute } from "../modules/auth/core/roleRoutes";
 import { ComingSoonPage } from "../pages/ComingSoonPage";
-const DashboardWrapper = lazy(() => import("../pages/dashboard/DashboardWrapper").then(m => ({ default: m.DashboardWrapper })));
 
+const DashboardWrapper = lazy(() =>
+  import("../pages/dashboard/DashboardWrapper").then((m) => ({
+    default: m.DashboardWrapper,
+  })),
+);
 const StaffPage = lazy(() => import("../pages/user management/StaffPage"));
 const SeekerPage = lazy(() => import("../pages/user management/SeekerPgae"));
 const SoloPage = lazy(() => import("../pages/user management/user/SoloPage"));
@@ -23,42 +33,19 @@ const SettingsPage = lazy(() => import("../pages/platform/SettingsPage"));
 const OrderPage = lazy(() => import("../pages/platform/OrderPage"));
 const CouponPage = lazy(() => import("../pages/platform/CouponPage"));
 const PlanRequestPage = lazy(() => import("../pages/platform/PlanRequestPage"));
+const NotificationsPage = lazy(() => import("../pages/notifications/NotificationsPage"));
 
 const PrivateRoutes = () => {
-  const { currentUser } = useAuth()
-  const homeRoute = getRoleHomeRoute(currentUser?.roles ?? [])
-  const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
-  const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
-  const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
-  const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
-  const StaffPage = lazy(() => import('../pages/user management/StaffPage'))
-  const SeekerPage = lazy(() => import('../pages/user management/SeekerPgae'))
-  const SoloPage = lazy(() => import('../pages/user management/user/SoloPage'))
-  const UserPage = lazy(() => import('../pages/user management/UserPage'))
-  const Subscription = lazy(() => import('../pages/Subscription/Subscription'))
-  const EmailTemplatePage = lazy(() => import('../pages/email/EmailTemplatePage'))
-  const PropertyListPage = lazy(() => import('../pages/user management/PropertyList'))
-  const ServiceListPage = lazy(() => import('../pages/user management/ServiceList'))
-  const InquiryPage = lazy(() => import('../pages/platform/InquiryPage'))
-  const NotificationsPage = lazy(() => import('../pages/notifications/NotificationsPage'))
-
+  const { currentUser } = useAuth();
+  const homeRoute = getRoleHomeRoute(currentUser?.roles ?? []);
 
   return (
     <Routes>
       <Route element={<MasterLayout />}>
         <Route path="auth/*" element={<Navigate to={homeRoute} replace />} />
-        <Route
-          path="/dashboard"
-          element={<Navigate to={homeRoute} replace />}
-        />
-        <Route
-          path="/super-admin"
-          element={<Navigate to="/super-admin/dashboard" replace />}
-        />
-        <Route
-          path="/admin"
-          element={<Navigate to="/admin/dashboard" replace />}
-        />
+        <Route path="/dashboard" element={<Navigate to={homeRoute} replace />} />
+        <Route path="/super-admin" element={<Navigate to="/super-admin/dashboard" replace />} />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
 
         <Route
           path="/super-admin/dashboard"
@@ -71,10 +58,7 @@ const PrivateRoutes = () => {
           }
         />
 
-        <Route
-          path="/super-admin/users/*"
-          element={<Navigate to="/super-admin/seekers" replace />}
-        />
+        <Route path="/super-admin/users/*" element={<Navigate to="/super-admin/seekers" replace />} />
 
         <Route
           path="/admin/dashboard"
@@ -156,12 +140,14 @@ const PrivateRoutes = () => {
         />
 
         <Route
-          path="/admin/coupons/*"
+          path="/admin/inquiry/*"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
-              <SuspensedView>
-                <CouponPage />
-              </SuspensedView>
+              <ModuleGuard anyOf={["inquiry_management"]}>
+                <SuspensedView>
+                  <InquiryPage />
+                </SuspensedView>
+              </ModuleGuard>
             </RoleGuard>
           }
         />
@@ -234,6 +220,7 @@ const PrivateRoutes = () => {
             </RoleGuard>
           }
         />
+
         <Route
           path="/super-admin/email-templates/*"
           element={
@@ -267,12 +254,12 @@ const PrivateRoutes = () => {
               </SuspensedView>
             </RoleGuard>
           }
-          />
+        />
 
         <Route
           path="/super-admin/notifications/*"
           element={
-            <RoleGuard allow={['super_admin']}>
+            <RoleGuard allow={["super_admin"]}>
               <SuspensedView>
                 <NotificationsPage />
               </SuspensedView>
@@ -305,19 +292,6 @@ const PrivateRoutes = () => {
         />
 
         <Route
-          path="/admin/inquiry/*"
-          element={
-            <RoleGuard allow={["admin", "admin_staff"]}>
-              <ModuleGuard anyOf={["inquiry_management"]}>
-                <SuspensedView>
-                  <InquiryPage />
-                </SuspensedView>
-              </ModuleGuard>
-            </RoleGuard>
-          }
-        />
-
-        <Route
           path="/admin/property-management/*"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
@@ -328,12 +302,12 @@ const PrivateRoutes = () => {
               </ModuleGuard>
             </RoleGuard>
           }
-          />
+        />
 
         <Route
           path="/admin/notifications/*"
           element={
-            <RoleGuard allow={['admin', 'admin_staff']}>
+            <RoleGuard allow={["admin", "admin_staff"]}>
               <SuspensedView>
                 <NotificationsPage />
               </SuspensedView>
@@ -364,7 +338,6 @@ const PrivateRoutes = () => {
         />
 
         <Route path="/apps/*" element={<Navigate to={homeRoute} replace />} />
-
         <Route path="*" element={<Navigate to="/error/404" />} />
       </Route>
     </Routes>

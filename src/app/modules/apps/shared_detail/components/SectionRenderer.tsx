@@ -1,6 +1,7 @@
 import React from "react";
 import type { SectionConfig } from "../core/DetailTypes";
 import InfoCard from "./sections/InfoCard";
+import GalleryWidget from "./sections/GalleryWidget";
 import RelatedTable from "./sections/RelatedTable";
 
 type Props<T> = {
@@ -31,9 +32,11 @@ export default function SectionRenderer<T>({ config, data }: Props<T>) {
         </div>
       );
 
+    case "gallery":
+      return <GalleryWidget config={config} data={data} />;
+
     case "timeline":
     case "emails":
-    case "gallery":
     case "map":
     case "notes":
       // Placeholders for advanced widgets to be implemented in Phase 2

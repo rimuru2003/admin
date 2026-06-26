@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { DetailConfig } from "./core/DetailTypes";
 import WorkspaceHeader from "./components/WorkspaceHeader";
 import SectionRenderer from "./components/SectionRenderer";
@@ -13,6 +13,10 @@ type Props<T> = {
 
 export default function DynamicWorkspace<T>({ config, data, isLoading, error, rowActions }: Props<T>) {
   const [activeTab, setActiveTab] = useState<string>(config.tabs[0]?.id || "");
+
+  useEffect(() => {
+    setActiveTab(config.tabs[0]?.id || "");
+  }, [config]);
 
   if (isLoading) {
     return (

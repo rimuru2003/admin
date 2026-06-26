@@ -1,27 +1,34 @@
-import type { DetailConfig } from "../../modules/apps/shared_detail/core/DetailTypes";
+import type { DetailConfig } from "../../../modules/apps/shared_detail/core/DetailTypes";
+import type { PlanRequest } from "./plan-request.types";
 
-export const planRequestDetailConfig: DetailConfig<any> = {
+export const planRequestDetailConfig: DetailConfig<PlanRequest> = {
   header: {
-    titleAccessor: (data) => data.company_name || "Unknown Company",
-    subtitleAccessor: (data) => `Requested by: ${data.contact_name}`,
+    titleAccessor: (data) => data.company_name ?? data.contact_name ?? "Unknown Company",
+    subtitleAccessor: (data) =>
+      data.contact_email ? `Requested by: ${data.contact_email}` : "Plan request details",
     avatarAccessor: () => "",
     badges: [
       {
-        label: (data: any) => data.status || "Unknown",
-        color: (data: any) => data.status === "approved" ? "success" : data.status === "rejected" ? "danger" : "warning"
-      }
+        label: (data) => data.status || "Unknown",
+        color: (data) =>
+          data.status === "approved"
+            ? "success"
+            : data.status === "rejected"
+              ? "danger"
+              : "warning",
+      },
     ],
     metrics: [
-      { label: "Requested Plan", valueAccessor: "requested_plan" },
-      { label: "Company Size", valueAccessor: (data) => data.company_size || "N/A" }
-    ]
+      { label: "Requested Plan", valueAccessor: "requested_plan_name" },
+      { label: "Billing Cycle", valueAccessor: "billing_cycle" },
+    ],
   },
   tabs: [
     {
       id: "overview",
       label: "Overview",
-      sections: ["request-info", "notes"]
-    }
+      sections: ["request-info", "notes"],
+    },
   ],
   sections: [
     {
@@ -31,18 +38,21 @@ export const planRequestDetailConfig: DetailConfig<any> = {
       fields: [
         { label: "Company Name", accessor: "company_name", colSpan: 6 },
         { label: "Contact Name", accessor: "contact_name", colSpan: 6 },
-        { label: "Email", accessor: "email", colSpan: 6 },
-        { label: "Phone", accessor: "phone", colSpan: 6 },
-        { label: "Requested Plan", accessor: "requested_plan", colSpan: 6 },
-      ]
+        { label: "Email", accessor: "contact_email", colSpan: 6 },
+        { label: "Phone", accessor: "contact_phone", colSpan: 6 },
+        { label: "Requested Plan", accessor: "requested_plan_name", colSpan: 6 },
+        { label: "Billing Cycle", accessor: "billing_cycle", colSpan: 6 },
+        { label: "Organization", accessor: (data) => data.organization?.name ?? "—", colSpan: 6 },
+      ],
     },
     {
       id: "notes",
       type: "info",
       title: "Notes",
       fields: [
-        { label: "Additional Notes", accessor: "notes", colSpan: 12 },
-      ]
-    }
-  ]
+        { label: "Additional Notes", accessor: "message", colSpan: 12 },
+        { label: "Admin Notes", accessor: "admin_notes", colSpan: 12 },
+      ],
+    },
+  ],
 };

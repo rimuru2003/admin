@@ -10,10 +10,11 @@ import {
   deletePlanApi,
   changePlanApi,
 } from "./plan.api";
-import type { Plan, PlanFormValues } from "./plan.types";
+import type { Plan, PlanFormValues, PlanSubscriptionSummary } from "./plan.types";
 
 type PlanState = {
   data: Plan[];
+  subscription: PlanSubscriptionSummary | null;
   loading: boolean;
   error: string | null;
   isModalOpen: boolean;
@@ -24,6 +25,7 @@ type PlanState = {
 
 const initialState: PlanState = {
   data: [],
+  subscription: null,
   loading: false,
   error: null,
   isModalOpen: false,
@@ -58,8 +60,7 @@ export const removePlan = createAsyncThunk(
 export const changePlan = createAsyncThunk(
   "plans/changePlan",
   async (planId: string) => {
-    await changePlanApi(planId);
-    return planId;
+    return await changePlanApi(planId);
   },
 );
 
@@ -84,7 +85,8 @@ const planSlice = createSlice({
       })
       .addCase(fetchPlans.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.data = action.payload.plans;
+        state.subscription = action.payload.subscription ?? null;
       })
       .addCase(fetchPlans.rejected, (state, action) => {
         state.loading = false;
@@ -116,10 +118,19 @@ const planSlice = createSlice({
       })
       .addCase(changePlan.fulfilled, (state, action) => {
         state.changing = false;
+        const selectedId = action.payload?.plan?.id ?? "";
         state.data = state.data.map((p) => ({
           ...p,
-          is_current: p.id === action.payload,
+          is_current: p.id === selectedId,
         }));
+        if (state.subscription) {
+          state.subscription = {
+            ...state.subscription,
+            status: "active",
+            is_trial_active: false,
+            plan: action.payload?.subscription?.plan ?? action.payload?.plan ?? state.subscription.plan,
+          };
+        }
       })
       .addCase(changePlan.rejected, (state) => {
         state.changing = false;

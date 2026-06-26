@@ -74,6 +74,20 @@ export interface UserModel {
   permissions?: string[];
   business_type?: string | null;
   business_verification_status?: string | null;
+  subscription?: {
+    organization_id?: string | null;
+    plan_id?: string | null;
+    status?: "trialing" | "active" | "expired" | "inactive";
+    is_trial_active?: boolean;
+    trial_started_at?: string | null;
+    trial_ends_at?: string | null;
+    subscription_activated_at?: string | null;
+    plan?: {
+      id: string;
+      name: string;
+      price: number;
+    } | null;
+  };
   pic?: string;
   language?: "en" | "de" | "es" | "fr" | "ja" | "zh" | "ru";
   timeZone?: string;

@@ -74,7 +74,9 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
         columns={staffConfig.columns}
         filtersConfig={staffConfig.filters}
         enableRowClick
-        getRowLink={(row) => `${portalBase}/staff/${row.id}`}
+        getRowLink={(row) =>
+          isSuperAdmin ? `${portalBase}/staff/${row.id}` : `${portalBase}/users/${row.id}`
+        }
         storageKey="staffColumns"
         headerActions={[{
           label: "Add Staff",

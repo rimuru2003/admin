@@ -21,7 +21,6 @@ import { Content } from "../../../_metronic/layout/components/content";
 
 import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
 
-import { useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 import PropertyModal from "../../services/features/properties/component/PropertyModal";
@@ -54,6 +53,9 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
     error,
     loading,
     isModalOpen,
+    editingProperty,
+    deleteModalOpen,
+    deletingProperty,
     saving,
   } = useSelector((s: RootState) => s.propertyList);
 
@@ -112,6 +114,22 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
     [mapProperties],
   );
 
+  const propertyRowActions =
+    rowActions ??
+    (!isSuperAdmin
+      ? [
+          {
+            label: "Edit",
+            onClick: (row: PropertyList) => dispatch(openPropertyModal(row)),
+          },
+          {
+            label: "Delete",
+            className: "text-danger",
+            onClick: (row: PropertyList) => dispatch(openDeletePropertyModal(row)),
+          },
+        ]
+      : undefined);
+
   if (error)
     return (
       <Content>
@@ -151,19 +169,24 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
     );
 
   return (
-    <Content>
-      <PageHeader
-        title={
-          isSuperAdmin
-            ? "Property Management - At a Glance"
-            : "Property Management"
-        }
-        subtitle={
-          isSuperAdmin
-            ? "All properties across companies"
-            : "Manage properties for your company"
-        }
-      />
+    <Routes>
+      <Route
+        index
+        element={
+          <>
+      <Content>
+        <PageHeader
+          title={
+            isSuperAdmin
+              ? "Property Management - At a Glance"
+              : "Property Management"
+          }
+          subtitle={
+            isSuperAdmin
+              ? "All properties across companies"
+              : "Manage properties for your company"
+          }
+        />
 
       <div className="d-flex justify-content-end mb-5">
         <div className="btn-group">
@@ -192,6 +215,8 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
             onParamsChange={handleParamsChange}
             columns={propertyListConfig.columns}
             filtersConfig={propertyListConfig.filters}
+            getRowLink={(row) => `${portalBase}/property-management/${row.id}`}
+            enableRowClick
             headerActions={
               !isSuperAdmin
                 ? [
@@ -203,19 +228,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
                 : undefined
             }
             rowActions={
-              !isSuperAdmin
-                ? [
-                    {
-                      label: "Edit",
-                      onClick: (row) => dispatch(openPropertyModal(row)),
-                    },
-                    {
-                      label: "Delete",
-                      className: "text-danger",
-                      onClick: (row) => dispatch(openDeletePropertyModal(row)),
-                    },
-                  ]
-                : undefined
+              propertyRowActions
             }
           />
         ) : (
@@ -302,10 +315,10 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
       </Content>
 
       {isModalOpen && (
-      <PropertyModal
-        initialValues={editingProperty}
-        isSubmitting={saving}
-        onClose={() => dispatch(closePropertyModal())}
+        <PropertyModal
+          initialValues={editingProperty}
+          isSubmitting={saving}
+          onClose={() => dispatch(closePropertyModal())}
           onSubmit={async (values) => {
             await dispatch(
               saveProperty({
@@ -329,8 +342,15 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
           isSubmitting={saving}
         />
       )}
-    </>
+          </>
+        }
+      />
+      <Route
+        path=":id"
+        element={<GenericDetailPage rowActions={propertyRowActions} />}
+      />
+    </Routes>
   );
 };
 
-export default PropertyListPageWrapper;
+export default PropertyListPage;
