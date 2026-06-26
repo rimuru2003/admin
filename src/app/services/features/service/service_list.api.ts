@@ -8,7 +8,7 @@ import type {
   GetServiceListParams,
 } from "./service_list.types";
 
-export type { GetServiceListParams };
+export type { GetServiceListParams } from "./service_list.types";
 
 const getBasePath = () => {
   const auth = getAuth();

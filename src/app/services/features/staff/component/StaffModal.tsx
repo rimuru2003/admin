@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react"
 import clsx from "clsx"
 import { ModalShell } from "../../../../modules/apps/component/ModalShell"
+import { useModuleAccess, useRoleAccess } from "../../../../modules/auth"
 import {
-  PLATFORM_PERMISSIONS,
+  ADMIN_PERMISSIONS,
+  SUPER_ADMIN_PERMISSIONS,
   PERMISSION_LABELS,
   type StaffMember,
   type StaffFormValues,
@@ -18,6 +20,22 @@ type Props = {
 
 const StaffModal = ({ initialValues, onClose, onSubmit, isSubmitting }: Props) => {
   const isEdit = !!initialValues
+  const { isSuperAdmin } = useRoleAccess()
+  const { hasModule } = useModuleAccess()
+  const availablePermissions = isSuperAdmin
+    ? SUPER_ADMIN_PERMISSIONS
+    : [
+        "dashboard.view",
+        ...(hasModule("property_management")
+          ? ADMIN_PERMISSIONS.filter((perm) => perm.startsWith("property."))
+          : []),
+        ...(hasModule("service_management")
+          ? ADMIN_PERMISSIONS.filter((perm) => perm.startsWith("service."))
+          : []),
+        ...ADMIN_PERMISSIONS.filter(
+          (perm) => perm.startsWith("user.") || perm.startsWith("settings."),
+        ),
+      ].filter((perm, index, array) => array.indexOf(perm) === index) as typeof ADMIN_PERMISSIONS[number][]
 
   const [form, setForm] = useState<StaffFormValues>({
     name: "",
@@ -146,7 +164,7 @@ const StaffModal = ({ initialValues, onClose, onSubmit, isSubmitting }: Props) =
       <div className="fv-row mb-7">
         <label className="fw-bold fs-6 mb-4 d-block">Permissions</label>
         <div className="d-flex flex-column gap-4">
-          {PLATFORM_PERMISSIONS.map((perm, i) => (
+          {availablePermissions.map((perm, i) => (
             <div key={perm}>
               <label className="form-check form-check-custom form-check-solid d-flex align-items-center gap-3 cursor-pointer">
                 <input
@@ -159,7 +177,7 @@ const StaffModal = ({ initialValues, onClose, onSubmit, isSubmitting }: Props) =
                   {PERMISSION_LABELS[perm]}
                 </span>
               </label>
-              {i < PLATFORM_PERMISSIONS.length - 1 && (
+              {i < availablePermissions.length - 1 && (
                 <div className="separator separator-dashed mt-4" />
               )}
             </div>

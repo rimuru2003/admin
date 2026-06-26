@@ -17,17 +17,19 @@ export default defineConfig({
       },
     },
   },
+
   build: {
-    chunkSizeWarningLimit: 500,
+    target: "esnext",
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes("node_modules")) {
-            // Charts
+            // Charts — only loads when dashboard is visited (lazy)
             if (id.includes("apexcharts") || id.includes("react-apexcharts")) {
               return "charts";
             }
-            // ExcelJS — the main culprit inside vendor-misc (very large)
+            // ExcelJS — already lazy-loaded via dynamic import()
             if (id.includes("exceljs")) {
               return "exceljs";
             }
@@ -84,27 +86,27 @@ export default defineConfig({
             return "vendor-misc";
           }
 
-          // Metronic source splits
+          // Metronic source splits — more granular to help lazy routing
           if (id.includes("/_metronic/")) {
             // i18n translations are large JSON files
             if (id.includes("/i18n/")) return "metronic-i18n";
-            // Layout components
-            if (id.includes("/layout/") || id.includes("/partials/"))
-              return "metronic-layout";
-            // Everything else in metronic
+            // Partials (widgets) — only needed on dashboard route
+            if (id.includes("/partials/")) return "metronic-partials";
+            // Layout components — needed on all authenticated pages
+            if (id.includes("/layout/")) return "metronic-layout";
+            // Everything else in metronic (helpers, assets/ts)
             return "metronic";
           }
         },
       },
     },
   },
+
   optimizeDeps: {
     include: [
       "react",
       "react-dom",
       "react-router-dom",
-      "apexcharts",
-      "react-apexcharts",
       "bootstrap",
     ],
   },

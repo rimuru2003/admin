@@ -1,8 +1,8 @@
 import clsx from 'clsx'
 import { KTIcon, toAbsoluteUrl } from '../../../helpers'
-import { HeaderUserMenu } from '../../../partials/layout/header-menus/HeaderUserMenu'
-import { ThemeModeSwitcher } from '../../../partials/layout/theme-mode/ThemeModeSwitcher'
+import { HeaderUserMenu, ThemeModeSwitcher } from '../../../partials'
 import { useLayout } from '../../core'
+import { NotificationBell } from '../../../../app/services/features/notifications/NotificationBell'
 
 const itemClass = 'ms-1 ms-md-4'
 const btnClass =
@@ -14,15 +14,15 @@ const Navbar = () => {
   const { config } = useLayout()
   return (
     <div className='app-navbar flex-shrink-0'>
-      {/* <div className={clsx('app-navbar-item align-items-stretch', itemClass)}>
-        <Search />
-      </div> */}
-
       {/* <div className={clsx('app-navbar-item', itemClass)}>
         <div id='kt_activities_toggle' className={btnClass}>
           <KTIcon iconName='chart-simple' className={btnIconClass} />
         </div>
       </div> */}
+
+      <NotificationBell />
+
+
 
       {/* <div className={clsx('app-navbar-item', itemClass)}>
         <div className={clsx('position-relative', btnClass)} id='kt_drawer_chat_toggle'>

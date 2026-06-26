@@ -15,16 +15,13 @@ import {
 
 import { mapPlanRequest } from "./plan-request.mapper";
 
-import type { PlanRequest, PlanRequestFormValues } from "./plan-request.types";
+import type {
+  PlanRequest,
+  PlanRequestFormValues,
+  PlanRequestReviewValues,
+} from "./plan-request.types";
 
 import type { GetPlanRequestParams } from "./plan-request.api";
-
-type ReviewPayload = {
-  admin_notes?: string | null;
-  create_order?: boolean;
-  plan_id?: string | null;
-  organization_id?: string | null;
-};
 
 type PlanRequestState = {
   data: PlanRequest[];
@@ -91,7 +88,7 @@ export const deletePlanRequest = createAsyncThunk(
 
 export const approvePlanRequest = createAsyncThunk(
   "planRequests/approve",
-  async ({ id, payload }: { id: string; payload: ReviewPayload }) => {
+  async ({ id, payload }: { id: string; payload: PlanRequestReviewValues }) => {
     const res = await approvePlanRequestApi(id, payload);
 
     return res;
@@ -100,7 +97,7 @@ export const approvePlanRequest = createAsyncThunk(
 
 export const rejectPlanRequest = createAsyncThunk(
   "planRequests/reject",
-  async ({ id, payload }: { id: string; payload: ReviewPayload }) => {
+  async ({ id, payload }: { id: string; payload: PlanRequestReviewValues }) => {
     const res = await rejectPlanRequestApi(id, payload);
 
     return res;

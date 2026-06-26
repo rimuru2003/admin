@@ -1,113 +1,181 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { ModalShell } from "../apps/component/ModalShell";
+import { KTIcon } from "../../../_metronic/helpers";
+import type { PermissionGroup } from "../../services/features/permissions/permission.types";
 import {
   DEFAULT_FEATURES,
   type Plan,
-  type PlanFormValues,
   type PlanFeature,
+  type PlanFormValues,
 } from "../../services/features/subscriptions/plan.types";
-import { KTIcon } from "../../../_metronic/helpers";
 
 type Props = {
   initialValues?: Plan | null;
   onClose: () => void;
   onSubmit: (values: PlanFormValues) => void;
   isSubmitting?: boolean;
+  permissionGroups?: PermissionGroup[];
 };
 
 const defaultFeatureList = (): PlanFeature[] =>
-  DEFAULT_FEATURES.map((f) => ({
-    name: f.name,
+  DEFAULT_FEATURES.map((feature) => ({
+    name: feature.name,
     enabled: false,
-    value: f.numeric ? 0 : undefined,
+    value: feature.numeric ? 0 : undefined,
   }));
+
+const normalizeFeatureList = (features?: PlanFeature[]) => {
+  if (!features?.length) {
+    return defaultFeatureList();
+  }
+
+  return features.map((feature) => ({
+    name: feature.name,
+    enabled: feature.enabled,
+    value: feature.value ?? undefined,
+  }));
+};
 
 const PlanModal = ({
   initialValues,
   onClose,
   onSubmit,
   isSubmitting,
+  permissionGroups = [],
 }: Props) => {
   const isEdit = !!initialValues;
 
   const [form, setForm] = useState<PlanFormValues>({
     name: "",
     price: 0,
+    propertyLimit: 0,
     popular: false,
     features: defaultFeatureList(),
+    permissions: [],
   });
 
   const [newFeatureName, setNewFeatureName] = useState("");
   const [newFeatureNumeric, setNewFeatureNumeric] = useState(false);
-
-  // which row index is currently being edited inline
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editName, setEditName] = useState("");
   const [editNumeric, setEditNumeric] = useState(false);
-
-  const [touched, setTouched] = useState({ name: false, price: false });
+  const [touched, setTouched] = useState({ name: false, price: false, propertyLimit: false });
+  const [permissionSearch, setPermissionSearch] = useState("");
 
   useEffect(() => {
-    if (initialValues) {
-      setForm({
-        name: initialValues.name,
-        price: initialValues.price,
-        popular: initialValues.popular,
-        features: initialValues.features,
-      });
+    if (!initialValues) {
+      setPermissionSearch("");
+      return;
     }
+
+    setForm({
+      name: initialValues.name,
+      price: initialValues.price,
+      propertyLimit: initialValues.propertyLimit ?? 0,
+      popular: initialValues.popular,
+      features: normalizeFeatureList(initialValues.features),
+      permissions: initialValues.permissions ?? [],
+    });
+    setPermissionSearch("");
   }, [initialValues]);
 
+  const isValid = useMemo(
+    () => form.name.trim().length > 0 && form.price >= 0 && form.propertyLimit >= 0,
+    [form.name, form.price, form.propertyLimit],
+  );
+
+  const filteredPermissionGroups = useMemo(() => {
+    const query = permissionSearch.trim().toLowerCase();
+
+    if (!query) {
+      return permissionGroups;
+    }
+
+    return permissionGroups
+      .map((group) => ({
+        ...group,
+        permissions: group.permissions.filter((permission) => {
+          const haystack = [
+            group.module,
+            permission.name,
+            permission.display_name ?? "",
+            permission.action,
+          ]
+            .join(" ")
+            .toLowerCase();
+
+          return haystack.includes(query);
+        }),
+      }))
+      .filter((group) => group.permissions.length > 0);
+  }, [permissionGroups, permissionSearch]);
+
+  const selectedPermissionsCount = form.permissions.length;
+  const totalPermissionsCount = permissionGroups.reduce(
+    (count, group) => count + group.permissions.length,
+    0,
+  );
+
   const nameError = touched.name && !form.name ? "Name is required" : "";
-  const priceError =
-    touched.price && form.price <= 0 ? "Price must be greater than 0" : "";
-  const isValid = !!form.name && form.price > 0;
+  const priceError = touched.price && form.price < 0 ? "Price cannot be negative" : "";
+  const propertyLimitError =
+    touched.propertyLimit && form.propertyLimit < 0 ? "Property limit cannot be negative" : "";
 
   const handleSubmit = () => {
-    setTouched({ name: true, price: true });
-    if (!isValid) return;
+    setTouched({ name: true, price: true, propertyLimit: true });
+
+    if (!isValid) {
+      return;
+    }
+
     onSubmit(form);
   };
 
-  const isNumeric = (f: PlanFeature) => f.value !== undefined;
+  const isNumeric = (feature: PlanFeature) => feature.value !== undefined;
 
   const toggleFeature = (index: number) =>
-    setForm((p) => ({
-      ...p,
-      features: p.features.map((f, i) =>
-        i === index ? { ...f, enabled: !f.enabled } : f,
+    setForm((current) => ({
+      ...current,
+      features: current.features.map((feature, featureIndex) =>
+        featureIndex === index
+          ? { ...feature, enabled: !feature.enabled }
+          : feature,
       ),
     }));
 
-  const updateFeatureValue = (index: number, val: string) =>
-    setForm((p) => ({
-      ...p,
-      features: p.features.map((f, i) =>
-        i === index ? { ...f, value: val === "" ? 0 : Number(val) } : f,
+  const updateFeatureValue = (index: number, value: string) =>
+    setForm((current) => ({
+      ...current,
+      features: current.features.map((feature, featureIndex) =>
+        featureIndex === index
+          ? { ...feature, value: value === "" ? 0 : Number(value) }
+          : feature,
       ),
     }));
 
   const removeFeature = (index: number) =>
-    setForm((p) => ({
-      ...p,
-      features: p.features.filter((_, i) => i !== index),
+    setForm((current) => ({
+      ...current,
+      features: current.features.filter((_, featureIndex) => featureIndex !== index),
     }));
 
   const addFeature = () => {
     const name = newFeatureName.trim();
-    if (!name) return;
-    if (
-      form.features.some((f) => f.name.toLowerCase() === name.toLowerCase())
-    ) {
+    if (!name) {
+      return;
+    }
+
+    if (form.features.some((feature) => feature.name.toLowerCase() === name.toLowerCase())) {
       setNewFeatureName("");
       setNewFeatureNumeric(false);
       return;
     }
-    setForm((p) => ({
-      ...p,
+
+    setForm((current) => ({
+      ...current,
       features: [
-        ...p.features,
+        ...current.features,
         { name, enabled: true, value: newFeatureNumeric ? 0 : undefined },
       ],
     }));
@@ -115,21 +183,11 @@ const PlanModal = ({
     setNewFeatureNumeric(false);
   };
 
-  const handleNewFeatureKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addFeature();
-    }
-  };
-
-  // ── Edit existing feature ──
   const startEdit = (index: number) => {
-    const f = form.features[index];
+    const feature = form.features[index];
     setEditingIndex(index);
-    setEditName(f.name);
-    setEditNumeric(isNumeric(f));
+    setEditName(feature.name);
+    setEditNumeric(isNumeric(feature));
   };
 
   const cancelEdit = () => {
@@ -139,42 +197,62 @@ const PlanModal = ({
   };
 
   const saveEdit = () => {
-    if (editingIndex === null) return;
+    if (editingIndex === null) {
+      return;
+    }
+
     const trimmed = editName.trim();
-    if (!trimmed) return;
+    if (!trimmed) {
+      return;
+    }
 
-    // prevent duplicate names against other rows
     const duplicate = form.features.some(
-      (f, i) =>
-        i !== editingIndex && f.name.toLowerCase() === trimmed.toLowerCase(),
+      (feature, featureIndex) =>
+        featureIndex !== editingIndex &&
+        feature.name.toLowerCase() === trimmed.toLowerCase(),
     );
-    if (duplicate) return;
 
-    setForm((p) => ({
-      ...p,
-      features: p.features.map((f, i) => {
-        if (i !== editingIndex) return f;
+    if (duplicate) {
+      return;
+    }
+
+    setForm((current) => ({
+      ...current,
+      features: current.features.map((feature, featureIndex) => {
+        if (featureIndex !== editingIndex) {
+          return feature;
+        }
+
         return {
-          ...f,
+          ...feature,
           name: trimmed,
-          // switching numeric on → default value 0 if it wasn't numeric before
-          // switching numeric off → drop value entirely
-          value: editNumeric ? (f.value ?? 0) : undefined,
+          value: editNumeric ? (feature.value ?? 0) : undefined,
         };
       }),
     }));
     cancelEdit();
   };
 
-  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      saveEdit();
-    }
-    if (e.key === "Escape") {
-      cancelEdit();
-    }
-  };
+  const togglePermission = (permissionName: string) =>
+    setForm((current) => ({
+      ...current,
+      permissions: current.permissions.includes(permissionName)
+        ? current.permissions.filter((value) => value !== permissionName)
+        : [...current.permissions, permissionName],
+    }));
+
+  const setModulePermissions = (group: PermissionGroup, enabled: boolean) =>
+    setForm((current) => {
+      const modulePermissions = group.permissions.map((permission) => permission.name);
+      const nextPermissions = enabled
+        ? Array.from(new Set([...current.permissions, ...modulePermissions]))
+        : current.permissions.filter((permission) => !modulePermissions.includes(permission));
+
+      return {
+        ...current,
+        permissions: nextPermissions,
+      };
+    });
 
   return (
     <ModalShell
@@ -191,40 +269,61 @@ const PlanModal = ({
           type="text"
           className={clsx("form-control form-control-solid", {
             "is-invalid": !!nameError,
-            "is-valid": touched.name && !nameError,
           })}
           placeholder="e.g. Gold"
           value={form.name}
-          onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-          onBlur={() => setTouched((p) => ({ ...p, name: true }))}
+          onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
+          onBlur={() => setTouched((current) => ({ ...current, name: true }))}
         />
-        {nameError && (
+        {nameError ? (
           <div className="fv-plugins-message-container">
             <span className="fv-help-block">{nameError}</span>
           </div>
-        )}
+        ) : null}
       </div>
 
-      <div className="fv-row mb-7">
-        <label className="required fw-bold fs-6 mb-2">Price (₹)</label>
-        <input
-          type="number"
-          className={clsx("form-control form-control-solid", {
-            "is-invalid": !!priceError,
-            "is-valid": touched.price && !priceError,
-          })}
-          placeholder="e.g. 1999"
-          value={form.price || ""}
-          onChange={(e) =>
-            setForm((p) => ({ ...p, price: Number(e.target.value) }))
-          }
-          onBlur={() => setTouched((p) => ({ ...p, price: true }))}
-        />
-        {priceError && (
-          <div className="fv-plugins-message-container">
-            <span className="fv-help-block">{priceError}</span>
-          </div>
-        )}
+      <div className="row g-5 mb-7">
+        <div className="col-md-6">
+          <label className="required fw-bold fs-6 mb-2">Price (₹)</label>
+          <input
+            type="number"
+            className={clsx("form-control form-control-solid", {
+              "is-invalid": !!priceError,
+            })}
+            placeholder="e.g. 1999"
+            value={form.price || ""}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, price: Number(event.target.value) }))
+            }
+            onBlur={() => setTouched((current) => ({ ...current, price: true }))}
+          />
+          {priceError ? (
+            <div className="fv-plugins-message-container">
+              <span className="fv-help-block">{priceError}</span>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="col-md-6">
+          <label className="required fw-bold fs-6 mb-2">Property Limit</label>
+          <input
+            type="number"
+            className={clsx("form-control form-control-solid", {
+              "is-invalid": !!propertyLimitError,
+            })}
+            placeholder="e.g. 25"
+            value={form.propertyLimit || ""}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, propertyLimit: Number(event.target.value) }))
+            }
+            onBlur={() => setTouched((current) => ({ ...current, propertyLimit: true }))}
+          />
+          {propertyLimitError ? (
+            <div className="fv-plugins-message-container">
+              <span className="fv-help-block">{propertyLimitError}</span>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div className="fv-row mb-7">
@@ -233,8 +332,8 @@ const PlanModal = ({
             type="checkbox"
             className="form-check-input"
             checked={form.popular}
-            onChange={(e) =>
-              setForm((p) => ({ ...p, popular: e.target.checked }))
+            onChange={(event) =>
+              setForm((current) => ({ ...current, popular: event.target.checked }))
             }
           />
           <span className="fw-bold fs-6">Mark as Most Popular</span>
@@ -245,13 +344,13 @@ const PlanModal = ({
         <label className="fw-bold fs-6 mb-4 d-block">Features & Limits</label>
 
         <div className="d-flex flex-column gap-3 mb-4">
-          {form.features.map((feature, i) => {
-            const isRowEditing = editingIndex === i;
+          {form.features.map((feature, index) => {
+            const isEditing = editingIndex === index;
 
-            if (isRowEditing) {
+            if (isEditing) {
               return (
                 <div
-                  key={`edit-${i}`}
+                  key={`edit-${index}`}
                   className="d-flex flex-column gap-2 p-3 rounded border border-primary"
                   style={{ background: "rgba(var(--bs-primary-rgb), 0.04)" }}
                 >
@@ -261,8 +360,16 @@ const PlanModal = ({
                       className="form-control form-control-solid"
                       value={editName}
                       autoFocus
-                      onChange={(e) => setEditName(e.target.value)}
-                      onKeyDown={handleEditKeyDown}
+                      onChange={(event) => setEditName(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          event.preventDefault();
+                          saveEdit();
+                        }
+                        if (event.key === "Escape") {
+                          cancelEdit();
+                        }
+                      }}
                     />
                     <button
                       type="button"
@@ -287,7 +394,7 @@ const PlanModal = ({
                       type="checkbox"
                       className="form-check-input"
                       checked={editNumeric}
-                      onChange={(e) => setEditNumeric(e.target.checked)}
+                      onChange={(event) => setEditNumeric(event.target.checked)}
                     />
                     <span className="text-muted fs-7">
                       This is a numeric limit (e.g. a quantity)
@@ -297,7 +404,6 @@ const PlanModal = ({
               );
             }
 
-            // ── Normal display row ──
             return (
               <div
                 key={feature.name}
@@ -308,83 +414,199 @@ const PlanModal = ({
                     type="checkbox"
                     className="form-check-input"
                     checked={feature.enabled}
-                    onChange={() => toggleFeature(i)}
+                    onChange={() => toggleFeature(index)}
                   />
-                  <span className="fw-semibold text-gray-800">
-                    {feature.name}
-                  </span>
+                  <span className="fw-semibold text-gray-800">{feature.name}</span>
                 </label>
 
-                {isNumeric(feature) && (
+                {isNumeric(feature) ? (
                   <input
                     type="number"
-                    className="form-control form-control-solid"
-                    style={{ width: 100 }}
-                    placeholder="0"
-                    value={feature.value || ""}
-                    onChange={(e) => updateFeatureValue(i, e.target.value)}
-                    disabled={!feature.enabled}
+                    className="form-control form-control-solid w-100px"
+                    value={feature.value ?? 0}
+                    onChange={(event) => updateFeatureValue(index, event.target.value)}
                   />
-                )}
+                ) : null}
 
-                <button
-                  type="button"
-                  className="btn btn-icon btn-sm btn-light-primary"
-                  onClick={() => startEdit(i)}
-                  title="Edit"
-                >
-                  <KTIcon iconName="pencil" className="fs-5" />
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn-icon btn-sm btn-light-danger"
-                  onClick={() => removeFeature(i)}
-                  title="Remove"
-                >
-                  <KTIcon iconName="trash" className="fs-5" />
-                </button>
+                <div className="d-flex gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-icon btn-sm btn-light-primary"
+                    onClick={() => startEdit(index)}
+                    title="Edit feature"
+                  >
+                    <KTIcon iconName="pencil" className="fs-5" />
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-icon btn-sm btn-light-danger"
+                    onClick={() => removeFeature(index)}
+                    title="Remove feature"
+                  >
+                    <KTIcon iconName="trash" className="fs-5" />
+                  </button>
+                </div>
               </div>
             );
           })}
-
-          {form.features.length === 0 && (
-            <div className="text-muted fs-7">No features added yet.</div>
-          )}
         </div>
 
-        <div className="d-flex flex-column gap-2">
-          <div className="d-flex gap-2">
-            <input
-              type="text"
-              className="form-control form-control-solid"
-              placeholder="e.g. API Calls or White-label App"
-              value={newFeatureName}
-              onChange={(e) => setNewFeatureName(e.target.value)}
-              onKeyDown={handleNewFeatureKeyDown}
-            />
-            <button
-              type="button"
-              className="btn btn-light-primary d-flex align-items-center gap-2"
-              onClick={addFeature}
-            >
-              <KTIcon iconName="plus" className="fs-3" />
-              Add
-            </button>
+        <div className="d-flex gap-2">
+          <input
+            type="text"
+            className="form-control form-control-solid"
+            placeholder="e.g. API Calls or White-label App"
+            value={newFeatureName}
+            onChange={(event) => setNewFeatureName(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                addFeature();
+              }
+            }}
+          />
+          <button type="button" className="btn btn-light-primary" onClick={addFeature}>
+            <KTIcon iconName="plus" className="fs-2" />
+            Add
+          </button>
+        </div>
+
+        <label className="form-check form-check-sm form-check-custom form-check-solid d-flex align-items-center gap-2 cursor-pointer mt-3">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            checked={newFeatureNumeric}
+            onChange={(event) => setNewFeatureNumeric(event.target.checked)}
+          />
+          <span className="text-muted fs-7">
+            This is a numeric limit (e.g. a quantity)
+          </span>
+        </label>
+
+        {permissionGroups.length > 0 ? (
+          <div className="mt-8">
+            <div className="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+              <div>
+                <label className="fw-bold fs-6 mb-1 d-block">Plan Permissions</label>
+                <div className="text-muted fs-7">
+                  Choose the access this plan should grant to admins.
+                </div>
+              </div>
+
+              <div className="d-flex align-items-center gap-2">
+                <span className="badge badge-light-primary">
+                  {selectedPermissionsCount} selected
+                </span>
+                <span className="badge badge-light">
+                  {totalPermissionsCount} available
+                </span>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="text"
+                className="form-control form-control-solid"
+                placeholder="Search permissions by module, action, or name"
+                value={permissionSearch}
+                onChange={(event) => setPermissionSearch(event.target.value)}
+              />
+            </div>
+
+            <div className="row g-4">
+              {filteredPermissionGroups.map((group) => {
+                const selectedInModule = group.permissions.filter((permission) =>
+                  form.permissions.includes(permission.name),
+                ).length;
+                const allInModuleSelected =
+                  group.permissions.length > 0 &&
+                  selectedInModule === group.permissions.length;
+                const someInModuleSelected =
+                  selectedInModule > 0 && selectedInModule < group.permissions.length;
+
+                return (
+                  <div className="col-12 col-xl-6" key={group.module}>
+                    <div className="border rounded-3 p-4 h-100 bg-light">
+                      <div className="d-flex align-items-start justify-content-between gap-3 mb-4">
+                        <div>
+                          <div className="fw-semibold text-uppercase text-muted fs-7 mb-1">
+                            {group.module.replace(/_/g, " ")}
+                          </div>
+                          <div className="text-muted fs-7">
+                            {selectedInModule} of {group.permissions.length} enabled
+                          </div>
+                        </div>
+
+                        <div className="d-flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            className={`btn btn-sm ${allInModuleSelected ? "btn-light-success" : "btn-light-primary"}`}
+                            onClick={() => setModulePermissions(group, true)}
+                          >
+                            Select all
+                          </button>
+                          <button
+                            type="button"
+                            className={`btn btn-sm ${someInModuleSelected ? "btn-light-warning" : "btn-light"}`}
+                            onClick={() => setModulePermissions(group, false)}
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="d-flex flex-column gap-3">
+                        {group.permissions.map((permission) => {
+                          const checked = form.permissions.includes(permission.name);
+
+                          return (
+                            <label
+                              key={permission.id}
+                              className={`form-check form-check-custom form-check-solid d-flex gap-3 m-0 p-3 rounded-3 border ${
+                                checked ? "border-primary bg-white" : "border-light"
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                className="form-check-input mt-1"
+                                checked={checked}
+                                onChange={() => togglePermission(permission.name)}
+                              />
+                              <span className="flex-grow-1">
+                                <span className="fw-semibold d-block mb-1">
+                                  {permission.display_name ?? permission.name}
+                                </span>
+                                <span className="d-flex flex-wrap align-items-center gap-2">
+                                  <span className="badge badge-light">{permission.action}</span>
+                                  <span className="text-muted fs-7">{permission.name}</span>
+                                </span>
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
+
+                      {group.permissions.length === 0 ? (
+                        <div className="text-muted fs-7">No permissions match the current search.</div>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {filteredPermissionGroups.length === 0 ? (
+              <div className="alert alert-light-info mt-4 mb-0">
+                No permissions match your search.
+              </div>
+            ) : null}
+
+            <div className="alert alert-light-primary mt-4 mb-0">
+              This section controls role-like access for the plan. Permissions are matched by name, so keep them
+              aligned with the backend permission catalog.
+            </div>
           </div>
-
-          <label className="form-check form-check-sm form-check-custom form-check-solid d-flex align-items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              checked={newFeatureNumeric}
-              onChange={(e) => setNewFeatureNumeric(e.target.checked)}
-            />
-            <span className="text-muted fs-7">
-              This is a numeric limit (e.g. a quantity)
-            </span>
-          </label>
-        </div>
+        ) : null}
       </div>
     </ModalShell>
   );

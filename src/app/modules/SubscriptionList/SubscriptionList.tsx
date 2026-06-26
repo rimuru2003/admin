@@ -91,6 +91,14 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                       <span className="fs-1">₹{plan.price}</span>
                     </div>
 
+                    {plan.permissions?.length ? (
+                      <div className="mb-4">
+                        <span className="badge badge-light-primary">
+                          {plan.permissions.length} permissions
+                        </span>
+                      </div>
+                    ) : null}
+
                     {canManage ? (
                       <button
                         className={`btn w-100 mb-4 ${plan.popular ? 'btn-light' : 'btn-light-primary'}`}

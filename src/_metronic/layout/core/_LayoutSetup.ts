@@ -9,21 +9,55 @@ import { DefaultConfig } from "./_LayoutConfig";
 const LAYOUT_CONFIG_KEY =
   import.meta.env.VITE_APP_BASE_LAYOUT_CONFIG_KEY || "LayoutConfig";
 
+const normalizeLayoutConfig = (config: ILayout): ILayout => {
+  const normalizedConfig = structuredClone(config) as ILayout;
+
+  if (normalizedConfig.app?.sidebar) {
+    normalizedConfig.app.sidebar.display =
+      DefaultConfig.app?.sidebar?.display ?? true;
+  }
+
+  if (normalizedConfig.app?.sidebar?.default?.minimize?.desktop) {
+    normalizedConfig.app.sidebar.default.minimize.desktop.enabled =
+      DefaultConfig.app?.sidebar?.default?.minimize?.desktop?.enabled ?? false;
+    normalizedConfig.app.sidebar.default.minimize.desktop.default =
+      DefaultConfig.app?.sidebar?.default?.minimize?.desktop?.default ?? false;
+    normalizedConfig.app.sidebar.default.minimize.desktop.hoverable =
+      DefaultConfig.app?.sidebar?.default?.minimize?.desktop?.hoverable ?? false;
+  }
+
+  if (normalizedConfig.app?.sidebar?.default?.collapse?.desktop) {
+    normalizedConfig.app.sidebar.default.collapse.desktop.enabled =
+      DefaultConfig.app?.sidebar?.default?.collapse?.desktop?.enabled ?? false;
+    normalizedConfig.app.sidebar.default.collapse.desktop.default =
+      DefaultConfig.app?.sidebar?.default?.collapse?.desktop?.default ?? false;
+  }
+
+  if (normalizedConfig.app?.sidebar?.default?.collapse?.mobile) {
+    normalizedConfig.app.sidebar.default.collapse.mobile.enabled =
+      DefaultConfig.app?.sidebar?.default?.collapse?.mobile?.enabled ?? false;
+    normalizedConfig.app.sidebar.default.collapse.mobile.default =
+      DefaultConfig.app?.sidebar?.default?.collapse?.mobile?.default ?? false;
+  }
+
+  return normalizedConfig;
+};
+
 const getLayoutFromLocalStorage = (): ILayout => {
   const ls = localStorage.getItem(LAYOUT_CONFIG_KEY);
   if (ls) {
     try {
-      return JSON.parse(ls) as ILayout;
+      return normalizeLayoutConfig(JSON.parse(ls) as ILayout);
     } catch (er) {
       console.error(er);
     }
   }
-  return DefaultConfig;
+  return normalizeLayoutConfig(DefaultConfig);
 };
 
 const setLayoutIntoLocalStorage = (config: ILayout) => {
   try {
-    localStorage.setItem(LAYOUT_CONFIG_KEY, JSON.stringify(config));
+    localStorage.setItem(LAYOUT_CONFIG_KEY, JSON.stringify(normalizeLayoutConfig(config)));
   } catch (er) {
     console.error(er);
   }

@@ -10,8 +10,24 @@ type PropertyApi = {
   description?: string | null;
 
   address?: string | null;
+  address_line_1?: string | null;
+  address_line_2?: string | null;
+  full_address?: string | null;
+  formatted_address?: string | null;
+  place_id?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   suburb?: string | null;
+  state?: string | null;
   postcode?: string | null;
+  country?: string | null;
+  location_verified?: boolean;
+  property_type_id?: string | null;
+  property_type?: {
+    id: string;
+    name: string;
+    slug?: string;
+  } | null;
 
   rating?: number;
 
@@ -51,8 +67,21 @@ export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
 
   rating: item.rating ?? undefined,
 
+  address: item.address ?? null,
+  address_line_1: item.address_line_1 ?? null,
+  address_line_2: item.address_line_2 ?? null,
+  full_address: item.full_address ?? null,
+  formatted_address: item.formatted_address ?? null,
+  place_id: item.place_id ?? null,
+  latitude: item.latitude ?? null,
+  longitude: item.longitude ?? null,
   suburb: item.suburb ?? null,
+  state: item.state ?? null,
   postcode: item.postcode ?? null,
+  country: item.country ?? null,
+  location_verified: item.location_verified ?? false,
+  property_type_id: item.property_type_id ?? null,
+  property_type: item.property_type ?? null,
 
   organization: item.organization ?? null,
   creator: item.creator ?? null,
@@ -71,8 +100,20 @@ export const mapProperty = (item: PropertyApi): Property => ({
   description: item.description ?? null,
 
   address: item.address ?? null,
+  address_line_1: item.address_line_1 ?? null,
+  address_line_2: item.address_line_2 ?? null,
+  full_address: item.full_address ?? null,
+  formatted_address: item.formatted_address ?? null,
+  place_id: item.place_id ?? null,
+  latitude: item.latitude ?? null,
+  longitude: item.longitude ?? null,
   suburb: item.suburb ?? null,
+  state: item.state ?? null,
   postcode: item.postcode ?? null,
+  country: item.country ?? null,
+  location_verified: item.location_verified ?? false,
+  property_type_id: item.property_type_id ?? null,
+  property_type: item.property_type ?? null,
 
   rating: item.rating,
 

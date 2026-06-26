@@ -6,6 +6,7 @@ import {FooterWrapper} from './components/footer'
 import {Sidebar} from './components/sidebar'
 import {PageDataProvider} from './core'
 import {reInitMenu} from '../helpers'
+import { SubscriptionGate } from '../../app/modules/subscription/SubscriptionGate'
 
 const MasterLayout = () => {
   const location = useLocation()
@@ -31,6 +32,7 @@ const MasterLayout = () => {
       </div>
 
       <ScrollTop />
+      <SubscriptionGate />
     </PageDataProvider>
   )
 }

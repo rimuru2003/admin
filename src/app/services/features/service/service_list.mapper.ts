@@ -11,9 +11,19 @@ type ServiceApi = {
 
   slug?: string | null;
 
+  title?: string | null;
+
   description?: string | null;
 
   category?: ServiceCategory;
+
+  service_area?: string | null;
+
+  rate_from?: number | null;
+
+  rate_to?: number | null;
+
+  is_active?: boolean;
 
   image?: string | null;
 
@@ -23,9 +33,9 @@ type ServiceApi = {
     slug: string;
   };
 
-  services_count?: number;
-
   organization_count?: number;
+
+  service_group_count?: number;
 
   created_at?: string | null;
   updated_at?: string | null;
@@ -38,17 +48,27 @@ export const mapServiceList = (item: ServiceApi): ServiceList => ({
 
   slug: item.slug ?? null,
 
+  title: item.title ?? null,
+
   description: item.description ?? null,
 
   category: item.category,
+
+  service_area: item.service_area ?? null,
+
+  rate_from: item.rate_from ?? null,
+
+  rate_to: item.rate_to ?? null,
+
+  is_active: item.is_active,
 
   image: item.image ?? null,
 
   organization_type: item.organization_type ?? null,
 
-  services_count: item.services_count ?? 0,
-
   organization_count: item.organization_count ?? 0,
+
+  service_group_count: item.service_group_count ?? 0,
 
   created_at: item.created_at ?? null,
 
@@ -62,9 +82,19 @@ export const mapService = (item: ServiceApi): Service => ({
 
   slug: item.slug ?? null,
 
+  title: item.title ?? null,
+
   description: item.description ?? null,
 
   category: item.category,
+
+  service_area: item.service_area ?? null,
+
+  rate_from: item.rate_from ?? null,
+
+  rate_to: item.rate_to ?? null,
+
+  is_active: item.is_active,
 
   image: item.image ?? null,
 
